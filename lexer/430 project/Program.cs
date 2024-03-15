@@ -1,8 +1,17 @@
-﻿using System;
+﻿using Lang.Lexer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
+
+class Program
+{
+    static void Main()
+    {
+        
+    }
+}
 namespace Lang.Lexer
 {
     public enum TokenType : ushort
@@ -219,7 +228,7 @@ namespace Lang.Lexer
                 if (line != Line) break;
             }
 
-            switch (lexeme.ToUpper())
+            switch (lexeme.ToLower())
             {
                 case "var":
                     {
@@ -313,7 +322,7 @@ namespace Lang.Lexer
                         lexemeLength = count;
                         return TokenType.TrueToken;
                     }
-                case "WHILE":
+                case "while":
                     {
                         lexemeLength = count;
                         return TokenType.WhileToken;

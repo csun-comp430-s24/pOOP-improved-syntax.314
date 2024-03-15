@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Hotspots>
+  <Hotspot>
+    <Assembly>430 project</Assembly>
+    <Class>Lang.Lexer.Tokenizer</Class>
+    <MethodName>IsKeyword()</MethodName>
+    <ShortName />
+    <Line>219</Line>
+    <FileIndex>0</FileIndex>
+    <Metrics>
+      <Metric>
+        <Name>Cyclomatic complexity</Name>
+        <Exceeded>true</Exceeded>
+        <Value>81</Value>
+      </Metric>
+    </Metrics>
+  </Hotspot>
+  <Hotspot>
+    <Assembly>430 project</Assembly>
+    <Class>Lang.Lexer.Tokenizer</Class>
+    <MethodName>IsOperator()</MethodName>
+    <ShortName />
+    <Line>374</Line>
+    <FileIndex>0</FileIndex>
+    <Metrics>
+      <Metric>
+        <Name>Cyclomatic complexity</Name>
+        <Exceeded>true</Exceeded>
+        <Value>34</Value>
+      </Metric>
+    </Metrics>
+  </Hotspot>
+</Hotspots>
