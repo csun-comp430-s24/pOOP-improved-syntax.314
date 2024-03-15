@@ -1,0 +1,15 @@
+C:\Users\jayms\Documents\GitHub\pOOP-improved-syntax.314\lexer\430 project\obj\Debug\net6.0\430 project.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jayms\Documents\GitHub\pOOP-improved-syntax.314\lexer\430 project\obj\Debug\net6.0\430 project.AssemblyInfoInputs.cache
+C:\Users\jayms\Documents\GitHub\pOOP-improved-syntax.314\lexer\430 project\obj\Debug\net6.0\430 project.AssemblyInfo.cs
+C:\Users\jayms\Documents\GitHub\pOOP-improved-syntax.314\lexer\430 project\obj\Debug\net6.0\430 project.csproj.CoreCompileInputs.cache
+C:\Users\jayms\Documents\GitHub\pOOP-improved-syntax.314\lexer\430 project\obj\Debug\net6.0\430 project.sourcelink.json
+C:\Users\jayms\Documents\GitHub\pOOP-improved-syntax.314\lexer\430 project\bin\Debug\net6.0\430 project.exe
+C:\Users\jayms\Documents\GitHub\pOOP-improved-syntax.314\lexer\430 project\bin\Debug\net6.0\430 project.deps.json
+C:\Users\jayms\Documents\GitHub\pOOP-improved-syntax.314\lexer\430 project\bin\Debug\net6.0\430 project.runtimeconfig.json
+C:\Users\jayms\Documents\GitHub\pOOP-improved-syntax.314\lexer\430 project\bin\Debug\net6.0\430 project.dll
+C:\Users\jayms\Documents\GitHub\pOOP-improved-syntax.314\lexer\430 project\bin\Debug\net6.0\430 project.pdb
+C:\Users\jayms\Documents\GitHub\pOOP-improved-syntax.314\lexer\430 project\obj\Debug\net6.0\430 project.dll
+C:\Users\jayms\Documents\GitHub\pOOP-improved-syntax.314\lexer\430 project\obj\Debug\net6.0\refint\430 project.dll
+C:\Users\jayms\Documents\GitHub\pOOP-improved-syntax.314\lexer\430 project\obj\Debug\net6.0\430 project.pdb
+C:\Users\jayms\Documents\GitHub\pOOP-improved-syntax.314\lexer\430 project\obj\Debug\net6.0\430 project.genruntimeconfig.cache
+C:\Users\jayms\Documents\GitHub\pOOP-improved-syntax.314\lexer\430 project\obj\Debug\net6.0\ref\430 project.dll
