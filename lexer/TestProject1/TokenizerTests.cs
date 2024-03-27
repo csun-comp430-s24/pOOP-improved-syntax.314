@@ -8,13 +8,16 @@ public class TokenizerTests
     [TestMethod]
     public void Tokenizer_ShouldIdentifyVarToken()
     {
-        var source = "var";
+        var source = "var x = 10;";
         var tokenizer = new Tokenizer(source);
-        var token = tokenizer.Get();
+        var tokens = tokenizer.GetAllTokens();
 
-        Assert.IsNotNull(token);
-        Assert.AreEqual(TokenType.VarToken, token.Type);
-        Assert.AreEqual("", token.Lexeme);
+        Assert.IsNotNull(tokens);
+        Assert.AreEqual(TokenType.VarToken, tokens[0].Type);
+        Assert.AreEqual(TokenType.Identifier, tokens[1].Type);
+        Assert.AreEqual(TokenType.EqualsToken, tokens[2].Type);
+        Assert.AreEqual(TokenType.IntegerLiteral, tokens[3].Type);
+        Assert.AreEqual(TokenType.SemicolonToken, tokens[4].Type);
     }
 
     [TestMethod]

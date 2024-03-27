@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "jGPWt/zVeO9/MX8cN6YvhtGJoIJ9eKG5+qr2XLeFAsfErtDLbb73IihN+mDQ8WKg94zPoYzEj7oO0uwrEwdwxA==",
+  "dgSpecHash": "u3YS/CGiK1seCLZTFm3Oho4OMAJfk7GSiW8yPr4J5RE+Z6d0ORC4qkMMdQ92JOLoCO6FerPWo/HE5MTS8pq9vg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\jayms\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj",
+  "projectFilePath": "C:\\Users\\admin\\Documents\\CSUN\\COMP 430\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\jayms\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.28\\microsoft.windowsdesktop.app.ref.6.0.28.nupkg.sha512",
-    "C:\\Users\\jayms\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.28\\microsoft.netcore.app.ref.6.0.28.nupkg.sha512",
-    "C:\\Users\\jayms\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.28\\microsoft.aspnetcore.app.ref.6.0.28.nupkg.sha512",
-    "C:\\Users\\jayms\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.28\\microsoft.netcore.app.host.win-x64.6.0.28.nupkg.sha512"
+    "C:\\Users\\admin\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.28\\microsoft.windowsdesktop.app.ref.6.0.28.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.28\\microsoft.netcore.app.ref.6.0.28.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.28\\microsoft.aspnetcore.app.ref.6.0.28.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.28\\microsoft.netcore.app.host.win-x64.6.0.28.nupkg.sha512"
   ],
   "logs": []
 }

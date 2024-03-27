@@ -157,6 +157,24 @@ namespace Lang.Lexer
             Unget();
             return token;
         }
+
+        public List<Token> GetAllTokens()
+        {
+            List<Token> tokens = new List<Token>();
+
+            while (!EOF)
+            {
+                Token newToken = Get();
+
+                if (newToken != null && newToken.Type != TokenType.Space)
+                {
+                    tokens.Add(newToken);
+                }
+            }
+
+            return tokens;
+        }
+
         public Token Get()
         {
             if (EOF) return null;
