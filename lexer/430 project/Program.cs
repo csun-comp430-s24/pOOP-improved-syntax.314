@@ -9,7 +9,7 @@ class Program
 {
     static void Main()
     {
-        
+
     }
 }
 namespace Lang.Lexer
@@ -505,4 +505,8 @@ namespace Lang.Lexer
 
     }
 
+    public sealed class Parser
+    {
+        
+    }
 }
