@@ -504,9 +504,119 @@ namespace Lang.Lexer
         }
 
     }
-
     public sealed class Parser
     {
-        
+        readonly List<string> Lines;
+        int Line = 0;
+        int Position = 0;
+        bool EOF = false;
+
+        int lexemeLength = 0;
+        char GetToken()
+        {
+            if (EOF) return (char)0;
+
+            char c = Lines[Line][Position];
+
+            if (Position + 1 < Lines[Line].Length)
+            {
+                Position++;
+            }
+            else
+            {
+                if (Line + 1 < Lines.Count)
+                {
+                    Line++;
+                    Position = 0;
+                }
+                else
+                {
+                    EOF = true;
+                    Position++;
+                }
+            }
+
+            return c;
+        }
+
+        void UngetString(int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                UngetToken();
+            }
+        }
+        void UngetToken()
+        {
+            if (Position != 0)
+            {
+                if (!EOF)
+                {
+                    Position--;
+                }
+                else
+                {
+                    Position--;
+                    EOF = false;
+                }
+            }
+            else
+            {
+                Line--;
+                Position = Lines[Line].Length - 1;
+            }
+        }
+
+        char PeekToken()
+        {
+            char c = GetToken();
+            if (c != (char)0) UngetToken();
+            return c;
+        }
+        public void Unget()
+        {
+            UngetString(lexemeLength);
+        }
+        public Token Peek()
+        {
+            Token token = Get();
+            Unget();
+            return token;
+        }
+        public Token Get()
+        {
+            if (EOF) return null;
+
+            TokenType type;
+            string lexeme = string.Empty;
+
+            if ((type = IsSpace()) != 0)
+            {
+                return new Token(type, lexeme, Line);
+            }
+            if ((type = IsOperator()) != 0)
+            {
+                return new Token(type, lexeme, Line);
+            }
+            if ((type = IsKeyword()) != 0)
+            {
+                return new Token(type, lexeme, Line);
+            }
+            Tuple<TokenType, String> identifier = IsIdentifier();
+            if (identifier.Item1 != 0)
+            {
+                return new Token(TokenType.Identifier, identifier.Item2, Line);
+            }
+            Tuple<TokenType, String> integerLiteral = IsIntegerLiteral();
+            if (integerLiteral.Item1 != 0)
+            {
+                return new Token(TokenType.IntegerLiteral, integerLiteral.Item2, Line);
+            }
+
+
+            //bad token
+            return null;
+
+        }
     }
 }
