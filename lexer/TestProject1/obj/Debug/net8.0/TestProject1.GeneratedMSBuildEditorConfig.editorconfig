@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = TestProject1
-build_property.ProjectDir = C:\Users\jayms\Documents\GitHub\pOOP-improved-syntax.314\lexer\TestProject1\
+build_property.ProjectDir = C:\Users\chris\Documents\GitHub\pOOP-improved-syntax.314\lexer\TestProject1\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
