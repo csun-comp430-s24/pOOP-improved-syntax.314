@@ -510,10 +510,26 @@ namespace Lang.Lexer
     {
         interface Exp
         {
+            public class VarExp : Exp
+            {
+                public string name;
+                public VarExp(string name)
+                {
+                    this.name = name;
+                }
+            }
             public class IntegerExp : Exp
             {
                 public int value;
-                public IntegerExp(int  value)
+                public IntegerExp(int value)
+                {
+                    this.value = value;
+                }
+            }
+            public class StringExp : Exp
+            {
+                public string value;
+                public StringExp(string value)
                 {
                     this.value = value;
                 }
@@ -524,10 +540,35 @@ namespace Lang.Lexer
             public class Println : Exp
             {
                 public Exp exp;
-                public Println(Exp exp) 
+                public Println(Exp exp)
                 {
                     this.exp = exp;
                 }
+            }
+            public class NewExp : Exp
+            {
+                public Exp left;
+                public Exp center;
+                public Exp right;
+                public NewExp(Exp leftExp, Exp Identifier, Exp rightExp)
+                {
+                    this.left = leftExp;
+                    this.center = Identifier;
+                    this.right = rightExp;
+                }
+                public Boolean Equals(object other)
+                {
+                    if (other is NewExp)
+                    {
+                        NewExp e = (NewExp)other;
+                        return e.left.Equals(left) && e.center.Equals(center) && e.right.Equals(right);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+
             }
             public class MethodCall : Exp
             {
@@ -584,8 +625,8 @@ namespace Lang.Lexer
                 public Exp op;
                 public Exp right;
 
-                public BinopExp(Exp left, Exp op, Exp right) 
-                { 
+                public BinopExp(Exp left, Exp op, Exp right)
+                {
                     this.left = left;
                     this.op = op;
                     this.right = right;
@@ -602,6 +643,29 @@ namespace Lang.Lexer
                         return false;
                     }
                 }
+
+            }
+            public class CommaExp : Exp
+            {
+                public Exp left;
+                public Exp right;
+                public CommaExp(Exp left, Exp right)
+                {
+                    this.left = left;
+                    this.right = right;
+                }
+                public Boolean Equals(object other)
+                {
+                    if (other is CommaExp)
+                    {
+                        CommaExp e = (CommaExp)other;
+                        return e.left.Equals(left) && e.right.Equals(right);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
             }
         }
         interface Op
@@ -610,125 +674,101 @@ namespace Lang.Lexer
             {
                 public Boolean Equals(object other)
                 {
-                        return other is PlusOp;
+                    return other is PlusOp;
                 }
                 public String ToString()
                 {
                     return "PlusOp()";
                 }
             }
+            public class MinusOp : Op
+            {
+                public Boolean Equals(object other)
+                {
+                    return other is MinusOp;
+                }
+                public String ToString()
+                {
+                    return "MinusOp()";
+                }
+            }
+            public class MultOp : Op
+            {
+                public Boolean Equals(object other)
+                {
+                    return other is MultOp;
+                }
+                public String ToString()
+                {
+                    return "MultOp()";
+                }
+            }
+            public class DivOp : Op
+            {
+                public Boolean Equals(object other)
+                {
+                    return other is DivOp;
+                }
+                public String ToString()
+                {
+                    return "DivOp()";
+                }
+            }
         }
+    }
+    interface Type
+    {
+        public class IntType { }
+        public class BooleanType { }
+        public class VoidType { }
+        public class CLassNameType { }
+    }
+    interface stmt
+    {
+        public class Vardec { }
+        public class AssignmentStmt
+        {
+            public stmt left;
+            public stmt right;
+            public AssignmentStmt(stmt left, stmt right)
+            {
+                this.left = left;
+                this.right = right;
+            }
+            public Boolean Equals(object other)
+            {
+                if (other is AssignmentStmt)
+                {
+                    AssignmentStmt e = (AssignmentStmt)other;
+                    return e.left.Equals(left) && e.right.Equals(right);
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
-    //readonly List<string> Lines;
-    //int Line = 0;
-    //int Position = 0;
-    //bool EOF = false;
-
-    //int lexemeLength = 0;
-    //char GetToken()
-    //{
-    //    if (EOF) return (char)0;
-
-    //    char c = Lines[Line][Position];
-
-    //    if (Position + 1 < Lines[Line].Length)
-    //    {
-    //        Position++;
-    //    }
-    //    else
-    //    {
-    //        if (Line + 1 < Lines.Count)
-    //        {
-    //            Line++;
-    //            Position = 0;
-    //        }
-    //        else
-    //        {
-    //            EOF = true;
-    //            Position++;
-    //        }
-    //    }
-
-    //    return c;
-    //}
-
-    //void UngetString(int count)
-    //{
-    //    for (int i = 0; i < count; i++)
-    //    {
-    //        UngetToken();
-    //    }
-    //}
-    //void UngetToken()
-    //{
-    //    if (Position != 0)
-    //    {
-    //        if (!EOF)
-    //        {
-    //            Position--;
-    //        }
-    //        else
-    //        {
-    //            Position--;
-    //            EOF = false;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        Line--;
-    //        Position = Lines[Line].Length - 1;
-    //    }
-    //}
-
-    //char PeekToken()
-    //{
-    //    char c = GetToken();
-    //    if (c != (char)0) UngetToken();
-    //    return c;
-    //}
-    //public void Unget()
-    //{
-    //    UngetString(lexemeLength);
-    //}
-    //public Token Peek()
-    //{
-    //    Token token = Get();
-    //    Unget();
-    //    return token;
-    //}
-    //public Token Get()
-    //{
-    //    if (EOF) return null;
-
-    //    TokenType type;
-    //    string lexeme = string.Empty;
-
-    //    if ((type = IsSpace()) != 0)
-    //    {
-    //        return new Token(type, lexeme, Line);
-    //    }
-    //    if ((type = IsOperator()) != 0)
-    //    {
-    //        return new Token(type, lexeme, Line);
-    //    }
-    //    if ((type = IsKeyword()) != 0)
-    //    {
-    //        return new Token(type, lexeme, Line);
-    //    }
-    //    Tuple<TokenType, String> identifier = IsIdentifier();
-    //    if (identifier.Item1 != 0)
-    //    {
-    //        return new Token(TokenType.Identifier, identifier.Item2, Line);
-    //    }
-    //    Tuple<TokenType, String> integerLiteral = IsIntegerLiteral();
-    //    if (integerLiteral.Item1 != 0)
-    //    {
-    //        return new Token(TokenType.IntegerLiteral, integerLiteral.Item2, Line);
-    //    }
-
-
-    //    //bad token
-    //    return null;
-
-    //}
+        public class WhileStmt : stmt
+        {
+            public stmt left;
+            public stmt right;
+            public WhileStmt(stmt left, stmt right)
+            {
+                this.left = left;
+                this.right = right;
+            }
+            public Boolean Equals(object other)
+            {
+                if (other is WhileStmt)
+                {
+                    WhileStmt e = (WhileStmt)other;
+                    return e.left.Equals(left) && e.right.Equals(right);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+    }
 }
