@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.ObjectiveC;
 using System.Text.RegularExpressions;
 
 
@@ -506,117 +508,227 @@ namespace Lang.Lexer
     }
     public sealed class Parser
     {
-        readonly List<string> Lines;
-        int Line = 0;
-        int Position = 0;
-        bool EOF = false;
-
-        int lexemeLength = 0;
-        char GetToken()
+        interface Exp
         {
-            if (EOF) return (char)0;
-
-            char c = Lines[Line][Position];
-
-            if (Position + 1 < Lines[Line].Length)
+            public class IntegerExp : Exp
             {
-                Position++;
-            }
-            else
-            {
-                if (Line + 1 < Lines.Count)
+                public int value;
+                public IntegerExp(int  value)
                 {
-                    Line++;
-                    Position = 0;
-                }
-                else
-                {
-                    EOF = true;
-                    Position++;
+                    this.value = value;
                 }
             }
-
-            return c;
-        }
-
-        void UngetString(int count)
-        {
-            for (int i = 0; i < count; i++)
+            public class TrueExp : Exp { }
+            public class FalseExp : Exp { }
+            public class ThisExp : Exp { }
+            public class Println : Exp
             {
-                UngetToken();
-            }
-        }
-        void UngetToken()
-        {
-            if (Position != 0)
-            {
-                if (!EOF)
+                public Exp exp;
+                public Println(Exp exp) 
                 {
-                    Position--;
-                }
-                else
-                {
-                    Position--;
-                    EOF = false;
+                    this.exp = exp;
                 }
             }
-            else
+            public class MethodCall : Exp
             {
-                Line--;
-                Position = Lines[Line].Length - 1;
+                public Exp leftExp;
+                public Exp Identifier;
+                public Exp[] rightExp;
+
+                public MethodCall(Exp leftExp, Exp Identifier, Exp[] rightExp)
+                {
+                    this.leftExp = leftExp;
+                    this.Identifier = Identifier;
+                    this.rightExp = rightExp;
+                }
+                public Boolean Equals(object other)
+                {
+                    if (other is MethodCall)
+                    {
+                        MethodCall e = (MethodCall)other;
+                        return e.leftExp.Equals(leftExp) && e.Identifier.Equals(Identifier) && e.rightExp.Equals(rightExp);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            public class Identifier : Exp
+            {
+                public string value;
+                public Identifier(string value)
+                {
+                    this.value = value;
+                }
+                public Boolean Equals(object other)
+                {
+                    if (other is Identifier)
+                    {
+                        Identifier e = (Identifier)other;
+                        return value.Equals(e.value);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                public String ToString()
+                {
+                    return "IdentifierExp(" + value + ")";
+                }
+            }
+            public class BinopExp : Exp
+            {
+                public Exp left;
+                public Exp op;
+                public Exp right;
+
+                public BinopExp(Exp left, Exp op, Exp right) 
+                { 
+                    this.left = left;
+                    this.op = op;
+                    this.right = right;
+                }
+                public Boolean Equals(object other)
+                {
+                    if (other is BinopExp)
+                    {
+                        BinopExp e = (BinopExp)other;
+                        return e.left.Equals(left) && e.right.Equals(right) && e.op.Equals(op);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
             }
         }
-
-        char PeekToken()
+        interface Op
         {
-            char c = GetToken();
-            if (c != (char)0) UngetToken();
-            return c;
+            public class PlusOp : Op
+            {
+                public Boolean Equals(object other)
+                {
+                        return other is PlusOp;
+                }
+                public String ToString()
+                {
+                    return "PlusOp()";
+                }
+            }
         }
-        public void Unget()
-        {
-            UngetString(lexemeLength);
         }
-        public Token Peek()
-        {
-            Token token = Get();
-            Unget();
-            return token;
-        }
-        public Token Get()
-        {
-            if (EOF) return null;
+    //readonly List<string> Lines;
+    //int Line = 0;
+    //int Position = 0;
+    //bool EOF = false;
 
-            TokenType type;
-            string lexeme = string.Empty;
+    //int lexemeLength = 0;
+    //char GetToken()
+    //{
+    //    if (EOF) return (char)0;
 
-            if ((type = IsSpace()) != 0)
-            {
-                return new Token(type, lexeme, Line);
-            }
-            if ((type = IsOperator()) != 0)
-            {
-                return new Token(type, lexeme, Line);
-            }
-            if ((type = IsKeyword()) != 0)
-            {
-                return new Token(type, lexeme, Line);
-            }
-            Tuple<TokenType, String> identifier = IsIdentifier();
-            if (identifier.Item1 != 0)
-            {
-                return new Token(TokenType.Identifier, identifier.Item2, Line);
-            }
-            Tuple<TokenType, String> integerLiteral = IsIntegerLiteral();
-            if (integerLiteral.Item1 != 0)
-            {
-                return new Token(TokenType.IntegerLiteral, integerLiteral.Item2, Line);
-            }
+    //    char c = Lines[Line][Position];
+
+    //    if (Position + 1 < Lines[Line].Length)
+    //    {
+    //        Position++;
+    //    }
+    //    else
+    //    {
+    //        if (Line + 1 < Lines.Count)
+    //        {
+    //            Line++;
+    //            Position = 0;
+    //        }
+    //        else
+    //        {
+    //            EOF = true;
+    //            Position++;
+    //        }
+    //    }
+
+    //    return c;
+    //}
+
+    //void UngetString(int count)
+    //{
+    //    for (int i = 0; i < count; i++)
+    //    {
+    //        UngetToken();
+    //    }
+    //}
+    //void UngetToken()
+    //{
+    //    if (Position != 0)
+    //    {
+    //        if (!EOF)
+    //        {
+    //            Position--;
+    //        }
+    //        else
+    //        {
+    //            Position--;
+    //            EOF = false;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        Line--;
+    //        Position = Lines[Line].Length - 1;
+    //    }
+    //}
+
+    //char PeekToken()
+    //{
+    //    char c = GetToken();
+    //    if (c != (char)0) UngetToken();
+    //    return c;
+    //}
+    //public void Unget()
+    //{
+    //    UngetString(lexemeLength);
+    //}
+    //public Token Peek()
+    //{
+    //    Token token = Get();
+    //    Unget();
+    //    return token;
+    //}
+    //public Token Get()
+    //{
+    //    if (EOF) return null;
+
+    //    TokenType type;
+    //    string lexeme = string.Empty;
+
+    //    if ((type = IsSpace()) != 0)
+    //    {
+    //        return new Token(type, lexeme, Line);
+    //    }
+    //    if ((type = IsOperator()) != 0)
+    //    {
+    //        return new Token(type, lexeme, Line);
+    //    }
+    //    if ((type = IsKeyword()) != 0)
+    //    {
+    //        return new Token(type, lexeme, Line);
+    //    }
+    //    Tuple<TokenType, String> identifier = IsIdentifier();
+    //    if (identifier.Item1 != 0)
+    //    {
+    //        return new Token(TokenType.Identifier, identifier.Item2, Line);
+    //    }
+    //    Tuple<TokenType, String> integerLiteral = IsIntegerLiteral();
+    //    if (integerLiteral.Item1 != 0)
+    //    {
+    //        return new Token(TokenType.IntegerLiteral, integerLiteral.Item2, Line);
+    //    }
 
 
-            //bad token
-            return null;
+    //    //bad token
+    //    return null;
 
-        }
-    }
+    //}
 }
