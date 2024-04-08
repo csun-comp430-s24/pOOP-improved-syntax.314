@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.ObjectiveC;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 
@@ -715,15 +716,18 @@ namespace Lang.Lexer
                 }
             }
         }
-    }
-    interface Type
+        interface Type
     {
         public class IntType { }
         public class BooleanType { }
         public class VoidType { }
         public class CLassNameType { }
     }
-    interface stmt
+        interface Vardec
+    {
+        public class VarType { }
+    }
+        interface stmt
     {
         public class Vardec { }
         public class AssignmentStmt
@@ -770,5 +774,205 @@ namespace Lang.Lexer
                 }
             }
         }
+        public class BreakStmt : stmt{ }
+        public class  ReturnStmt : stmt 
+        {
+            public stmt left;
+            public stmt right;
+
+            public ReturnStmt(stmt left, stmt right)
+            {
+                this.left = left;
+                this.right = right;
+            }
+            public Boolean Equals(object other)
+            {
+                if (other is ReturnStmt)
+                {
+                    ReturnStmt e = (ReturnStmt)other;
+                    return e.left.Equals(left) && e.right.Equals(right);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        public class IfStmt : stmt
+        {
+            public stmt left;
+            public stmt mleft;
+            public stmt mid;
+            public stmt mright;
+            public stmt right;
+            public IfStmt(stmt left, stmt mleft, stmt mid, stmt mright, stmt right)
+            {
+                this.left = left;
+                this.mleft = mleft;
+                this.mid = mid;
+                this.mright = mright;
+                this.right = right;
+            }
+            public Boolean Equals(object other)
+            {
+                if (other is IfStmt)
+                {
+                    IfStmt e = (IfStmt)other;
+                    return e.left.Equals(left) && e.mleft.Equals(mleft) && e.mid.Equals(mid) && e.mright.Equals(mright) && e.right.Equals(right);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        public class BlockStmt : stmt
+        {
+            public stmt[] Block;
+            public BlockStmt(stmt[] Block)
+            {
+                this.Block = Block ;
+            }
+            public Boolean Equals(object other)
+            {
+                if (other is BlockStmt)
+                {
+                    BlockStmt e = (BlockStmt)other;
+                    return e.Block.Equals(Block);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
     }
+        interface MethodDef
+        {
+            public class Method : MethodDef
+            {
+                public MethodDef left;
+                public MethodDef mleft;
+                public MethodDef mid;
+                public MethodDef mright;
+                public MethodDef[] right;
+                public Method(MethodDef left, MethodDef mleft, MethodDef mid, MethodDef mright, MethodDef[] right)
+                {
+                    this.left = left;
+                    this.mleft = mleft;
+                    this.mid = mid;
+                    this.mright = mright;
+                    this.right = right;
+                }
+                public Boolean Equals(object other)
+                {
+                    if (other is Method)
+                    {
+                        Method e = (Method)other;
+                        return e.left.Equals(left) && e.mleft.Equals(mleft) && e.mid.Equals(mid) && e.mright.Equals(mright) && e.right.Equals(right);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        interface Constructor
+        {
+            public class Con : Constructor
+            {
+                public Constructor left;
+                public Constructor mleft;
+                public Constructor mid;
+                public Constructor mright;
+                public Constructor[] right;
+                public Con(Constructor left, Constructor mleft, Constructor mid, Constructor mright, Constructor[] right)
+                {
+                    this.left = left;
+                    this.mleft = mleft;
+                    this.mid = mid;
+                    this.mright = mright;
+                    this.right = right;
+                }
+                public Boolean Equals(object other)
+                {
+                    if (other is Con)
+                    {
+                        Con e = (Con)other;
+                        return e.left.Equals(left) && e.mleft.Equals(mleft) && e.mid.Equals(mid) && e.mright.Equals(mright) && e.right.Equals(right);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        interface ClassDef
+        {
+            public class Class : ClassDef
+            {
+                public ClassDef left;
+                public ClassDef Identifier1;
+                public ClassDef Extender;
+                public ClassDef Identifier2;
+                public ClassDef Vardec;
+                public ClassDef Constructor;
+                public ClassDef[] MethodDef;
+                public Class(ClassDef left, ClassDef identifier1, ClassDef extender, ClassDef identifier2, ClassDef vardec, ClassDef constructor, ClassDef[] methodDef)
+                {
+                    this.left = left;
+                    this.Identifier1 = identifier1;
+                    this.Extender = extender;
+                    this.Identifier2 = identifier2;
+                    this.Vardec = vardec;
+                    this.Constructor = constructor;
+                    this.MethodDef = methodDef;
+                }
+                public Boolean Equals(object other)
+                {
+                    if (other is Class)
+                    {
+                        Class e = (Class)other;
+                        return e.left.Equals(left) && e.Identifier1.Equals(Identifier1) && e.Extender.Equals(Extender) && e.Identifier2.Equals(Identifier2) && e.Constructor.Equals(Constructor) && e.MethodDef.Equals(MethodDef);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+
+            }
+        }
+        interface program
+        {
+            public class Code : program
+            {
+                public program[] classdef;
+                public program[] stmts;
+                public Code(program[] classdef, program[] stmts)
+                {
+                    this.classdef = classdef;
+                    this.stmts = stmts;
+                }
+                public Boolean Equals(object other)
+                {
+                    if (other is Code)
+                    {
+                        Code e = (Code)other;
+                        return e.classdef.Equals(classdef) && e.stmts.Equals(stmts);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+
+            }
+        }
+    }
+
+
+
 }
