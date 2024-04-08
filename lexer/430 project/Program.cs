@@ -1,4 +1,5 @@
 ﻿using Lang.Lexer;
+using Lang.Parser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -508,7 +509,7 @@ namespace Lang.Lexer
 
     }
 }
-namespace lang.parser
+namespace Lang.Parser
 {
     public sealed class Parser
     {
