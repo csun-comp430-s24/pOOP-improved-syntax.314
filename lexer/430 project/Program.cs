@@ -507,6 +507,9 @@ namespace Lang.Lexer
         }
 
     }
+}
+namespace lang.parser
+{
     public sealed class Parser
     {
         interface Exp
@@ -972,7 +975,4 @@ namespace Lang.Lexer
             }
         }
     }
-
-
-
 }
