@@ -523,22 +523,57 @@ namespace Lang.Parser
         public ParseResult<VarDecStmt> ParseVarDecStmt(int startPosition)
         {
             Token token = tokens[startPosition];
-
             switch (token.Type)
             {
                 case TokenType.IntToken:
                     if (tokens[startPosition + 1].Type == TokenType.Identifier)
                     {
-                        return new ParseResult<VarDecStmt>(new VarDecStmt(token.Type, tokens[startPosition + 1].Lexeme), startPosition + 2);
+                        if (tokens[startPosition + 1].Type == TokenType.SemicolonToken)
+                            return new ParseResult<VarDecStmt>(new VarDecStmt(token.Type, tokens[startPosition + 1].Lexeme), startPosition + 3);
+                        else
+                            throw new ParseException("Missing Semicolon");
                     }
+                    else
+                        throw new ParseException("Identifier expected");
                 case TokenType.StringToken:
-                    return new ParseResult<Type>(new MinusOp(), startPosition + 1);
+                    if (tokens[startPosition + 1].Type == TokenType.Identifier)
+                    {
+                        if (tokens[startPosition + 1].Type == TokenType.SemicolonToken)
+                            return new ParseResult<VarDecStmt>(new VarDecStmt(token.Type, tokens[startPosition + 1].Lexeme), startPosition + 3);
+                        else
+                            throw new ParseException("Missing Semicolon");
+                    }
+                    throw new ParseException("Identifier expected");
+
                 case TokenType.BooleanToken:
-                    return new ParseResult<Type>(new MultOp(), startPosition + 1);
+                    if (tokens[startPosition + 1].Type == TokenType.Identifier)
+                    {
+                        if (tokens[startPosition + 1].Type == TokenType.SemicolonToken)
+                            return new ParseResult<VarDecStmt>(new VarDecStmt(token.Type, tokens[startPosition + 1].Lexeme), startPosition + 3);
+                        else
+                            throw new ParseException("Missing Semicolon");
+                    }
+                    throw new ParseException("Identifier expected");
+
                 case TokenType.VoidToken:
-                    return new ParseResult<Type>(new DivOp(), startPosition + 1);
+                    if (tokens[startPosition + 1].Type == TokenType.Identifier)
+                    {
+                        if (tokens[startPosition + 1].Type == TokenType.SemicolonToken)
+                            return new ParseResult<VarDecStmt>(new VarDecStmt(token.Type, tokens[startPosition + 1].Lexeme), startPosition + 3);
+                        else
+                            throw new ParseException("Missing Semicolon");
+                    }
+                    throw new ParseException("Identifier expected");
                 default:
+                    throw new ParseException("Defaulted in ParseVarDecStmt");
                     
+            }
+        }
+        public ParseResult<Stmt>ParseStmt(int startPosition)
+        {
+            switch (Token.Type)
+            {
+
             }
         }
     }
