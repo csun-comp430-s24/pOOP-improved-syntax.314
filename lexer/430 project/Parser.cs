@@ -569,7 +569,21 @@ namespace Lang.Parser
                     
             }
         }
-        public ParseResult<Stmt>ParseStmt(int startPosition)
+        public ParseResult<BreakStmt> ParseBreakStmt(int startPosition)
+        {
+            Token token = tokens[startPosition];
+                switch (token.Type)
+            {
+                case TokenType.BreakToken:
+                    if (tokens[startPosition + 1].Type == TokenType.SemicolonToken)
+                        return new ParseResult<BreakStmt>(new BreakStmt(), startPosition + 2);
+                    else
+                        throw new ParseException("Missing Semicolon");
+                default:
+                    throw new ParseException("defaulted in ParseBreakStmt");
+            }
+        }
+        public ParseResult<Stmt> ParseStmt(int startPosition)
         {
             switch (Token.Type)
             {
