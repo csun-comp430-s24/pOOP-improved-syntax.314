@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\TestProject1\\TestProject1.csproj": {}
+    "C:\\Users\\jayms\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\TestProject1\\TestProject1.csproj": {}
   },
   "projects": {
-    "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj": {
+    "C:\\Users\\jayms\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj",
+        "projectUniqueName": "C:\\Users\\jayms\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj",
         "projectName": "430 project",
-        "projectPath": "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj",
-        "packagesPath": "C:\\Users\\chris\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\obj\\",
+        "projectPath": "C:\\Users\\jayms\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj",
+        "packagesPath": "C:\\Users\\jayms\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jayms\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\chris\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\jayms\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -59,6 +55,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[6.0.28, 6.0.28]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[6.0.28, 6.0.28]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[6.0.28, 6.0.28]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[6.0.28, 6.0.28]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -68,21 +82,17 @@
         }
       }
     },
-    "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\TestProject1\\TestProject1.csproj": {
+    "C:\\Users\\jayms\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\TestProject1\\TestProject1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\TestProject1\\TestProject1.csproj",
+        "projectUniqueName": "C:\\Users\\jayms\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\TestProject1\\TestProject1.csproj",
         "projectName": "TestProject1",
-        "projectPath": "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\TestProject1\\TestProject1.csproj",
-        "packagesPath": "C:\\Users\\chris\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\TestProject1\\obj\\",
+        "projectPath": "C:\\Users\\jayms\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\TestProject1\\TestProject1.csproj",
+        "packagesPath": "C:\\Users\\jayms\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jayms\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\TestProject1\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\chris\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\jayms\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -96,8 +106,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj": {
-                "projectPath": "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj"
+              "C:\\Users\\jayms\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj": {
+                "projectPath": "C:\\Users\\jayms\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj"
               }
             }
           }

@@ -32,7 +32,7 @@ namespace Lang.Lexer
         AddToken = 24,
         SubToken = 25,
 
-        QuoteToken = 40,
+        PeriodToken = 40,
         OpenBracketToken = 26,
         ClosedBracketToken = 27,
         AndToken = 28,
@@ -194,11 +194,7 @@ namespace Lang.Lexer
             {
                 return new Token(TokenType.IntegerLiteral, integerLiteral.Item2, Line);
             }
-            Tuple<TokenType, String> stringLiteral = IsStringLiteral();
-            if (stringLiteral.Item1 != 0)
-            {
-                return new Token(TokenType.StringLiteral, stringLiteral.Item2, Line);
-            }
+
 
 
             //bad token
@@ -228,29 +224,7 @@ namespace Lang.Lexer
             return new Tuple<TokenType, string>(TokenType.Identifier, lexeme);
         }
 
-        Tuple<TokenType, String> IsStringLiteral()
-        {
-            if (PeekChar() != '\"')
-                return new Tuple<TokenType, string>(0, string.Empty);
-            string lexeme = GetChar().ToString();
-            int count = 1;
-            int line = Line;
-            while (PeekChar() != '\"')
-            {
-                lexeme = lexeme + GetChar();
-                count++;
-                if (line != Line)
-                {
-                    UngetString(count);
-                    return new Tuple<TokenType, string>(0, string.Empty);
-                }
-            }
-            lexeme += GetChar();
-
-            lexemeLength = count+1;
-            return new Tuple<TokenType, string>(TokenType.Identifier, lexeme);
-        }
-
+        
         TokenType IsKeyword()
         {
             if (!char.IsLetter(PeekChar())) return 0;
@@ -513,6 +487,12 @@ namespace Lang.Lexer
                         GetChar();
                         lexemeLength = 1;
                         return TokenType.CommaToken;
+                    }
+                case '.':
+                    {
+                        GetChar();
+                        lexemeLength = 1;
+                        return TokenType.PeriodToken;
                     }
 
                 case ')':

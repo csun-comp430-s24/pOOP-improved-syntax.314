@@ -100,22 +100,21 @@ namespace Lang.Parser
         }
         public class MethodCall : Exp
         {
-            public Exp leftExp;
             public Exp Identifier;
-            public Exp[] rightExp;
+            public Exp[] Parameters;
 
-            public MethodCall(Exp leftExp, Exp Identifier, Exp[] rightExp)
+            public MethodCall(Exp Identifier, Exp[] Parameters)
             {
-                this.leftExp = leftExp;
                 this.Identifier = Identifier;
-                this.rightExp = rightExp;
+                this.Parameters = Parameters;
             }
+            
             public Boolean Equals(object other)
             {
                 if (other is MethodCall)
                 {
                     MethodCall e = (MethodCall)other;
-                    return e.leftExp.Equals(leftExp) && e.Identifier.Equals(Identifier) && e.rightExp.Equals(rightExp);
+                    return e.Identifier.Equals(Identifier) && e.Parameters.Equals(Parameters);
                 }
                 else
                 {
@@ -150,10 +149,10 @@ namespace Lang.Parser
         public class BinopExp : Exp
         {
             public Exp left;
-            public Exp op;
+            public Op op;
             public Exp right;
 
-            public BinopExp(Exp left, Exp op, Exp right)
+            public BinopExp(Exp left, Op op, Exp right)
             {
                 this.left = left;
                 this.op = op;
@@ -195,6 +194,18 @@ namespace Lang.Parser
                 }
             }
         }
+
+        public class PeriodOp : Op {   
+           public Boolean Equals(object other)
+            {
+                return other is PeriodOp;
+            }
+            public String ToString()
+            {
+                return "PeriodOp()";
+            } 
+        }
+
 
         public class PlusOp : Op
         {
@@ -243,7 +254,7 @@ namespace Lang.Parser
 
         public class IntType : Type { }
         public class BooleanType : Type { }
-        public class StringType : Type { }
+        
         public class VoidType : Type { }
         public class CLassNameType : Type { }
 
@@ -262,9 +273,9 @@ namespace Lang.Parser
         }
         public class AssignmentStmt : Stmt
         {
-            public Stmt left;
-            public Stmt right;
-            public AssignmentStmt(Stmt left, Stmt right)
+            public Identifier left;
+            public Exp right;
+            public AssignmentStmt(Identifier left, Exp right)
             {
                 this.left = left;
                 this.right = right;
@@ -284,19 +295,20 @@ namespace Lang.Parser
         }
         public class WhileStmt : Stmt
         {
-            public Stmt left;
-            public Stmt right;
-            public WhileStmt(Stmt left, Stmt right)
+            public Exp Condition;
+            public Stmt body;
+            public WhileStmt(Exp Condition, Stmt body)
             {
-                this.left = left;
-                this.right = right;
+                this.Condition = Condition;
+                this.body = body;
             }
+            
             public Boolean Equals(object other)
             {
                 if (other is WhileStmt)
                 {
                     WhileStmt e = (WhileStmt)other;
-                    return e.left.Equals(left) && e.right.Equals(right);
+                    return e.Condition.Equals(Condition) && e.body.Equals(body);
                 }
                 else
                 {
@@ -307,20 +319,19 @@ namespace Lang.Parser
         public class BreakStmt : Stmt { }
         public class ReturnStmt : Stmt
         {
-            public Stmt left;
-            public Stmt right;
+            public Exp left;
+            
 
-            public ReturnStmt(Stmt left, Stmt right)
+            public ReturnStmt(Exp left)
             {
                 this.left = left;
-                this.right = right;
             }
             public Boolean Equals(object other)
             {
                 if (other is ReturnStmt)
                 {
                     ReturnStmt e = (ReturnStmt)other;
-                    return e.left.Equals(left) && e.right.Equals(right);
+                    return e.left.Equals(left);
                 }
                 else
                 {
@@ -330,25 +341,28 @@ namespace Lang.Parser
         }
         public class IfStmt : Stmt
         {
-            public Stmt left;
-            public Stmt mleft;
-            public Stmt mid;
-            public Stmt mright;
-            public Stmt right;
-            public IfStmt(Stmt left, Stmt mleft, Stmt mid, Stmt mright, Stmt right)
+            public Exp Condition;
+            public Stmt ifBody;
+            public Stmt elseBody;
+            public IfStmt(Exp Condition, Stmt ifBody, Stmt elseBody)
             {
-                this.left = left;
-                this.mleft = mleft;
-                this.mid = mid;
-                this.mright = mright;
-                this.right = right;
+                this.Condition = Condition;
+                this.ifBody = ifBody;
+                this.elseBody = elseBody;
             }
+
+             public IfStmt(Exp Condition, Stmt ifBody)
+            {
+                this.Condition = Condition;
+                this.ifBody = ifBody;
+            }
+           
             public Boolean Equals(object other)
             {
                 if (other is IfStmt)
                 {
                     IfStmt e = (IfStmt)other;
-                    return e.left.Equals(left) && e.mleft.Equals(mleft) && e.mid.Equals(mid) && e.mright.Equals(mright) && e.right.Equals(right);
+                    return e.Condition.Equals(Condition) && e.ifBody.Equals(ifBody) && e.elseBody.Equals(elseBody);
                 }
                 else
                 {
@@ -520,7 +534,7 @@ namespace Lang.Parser
             }
         }
 
-        public ParseResult<VarDecStmt> ParseVarDecStmt(int startPosition)
+        public ParseResult<Stmt> ParseVarDecStmt(int startPosition)
         {
             Token token = tokens[startPosition];
             switch (token.Type)
@@ -528,28 +542,19 @@ namespace Lang.Parser
                 case TokenType.IntToken:
                     if (tokens[startPosition + 1].Type == TokenType.Identifier)
                     {
-                        if (tokens[startPosition + 1].Type == TokenType.SemicolonToken)
-                            return new ParseResult<VarDecStmt>(new VarDecStmt(token.Type, tokens[startPosition + 1].Lexeme), startPosition + 3);
+                        if (tokens[startPosition + 2].Type == TokenType.SemicolonToken)
+                            return new ParseResult<Stmt>(new VarDecStmt(token.Type, tokens[startPosition + 1].Lexeme), startPosition + 3);
                         else
                             throw new ParseException("Missing Semicolon");
                     }
                     else
                         throw new ParseException("Identifier expected");
-                case TokenType.StringToken:
-                    if (tokens[startPosition + 1].Type == TokenType.Identifier)
-                    {
-                        if (tokens[startPosition + 1].Type == TokenType.SemicolonToken)
-                            return new ParseResult<VarDecStmt>(new VarDecStmt(token.Type, tokens[startPosition + 1].Lexeme), startPosition + 3);
-                        else
-                            throw new ParseException("Missing Semicolon");
-                    }
-                    throw new ParseException("Identifier expected");
 
                 case TokenType.BooleanToken:
                     if (tokens[startPosition + 1].Type == TokenType.Identifier)
                     {
-                        if (tokens[startPosition + 1].Type == TokenType.SemicolonToken)
-                            return new ParseResult<VarDecStmt>(new VarDecStmt(token.Type, tokens[startPosition + 1].Lexeme), startPosition + 3);
+                        if (tokens[startPosition + 2].Type == TokenType.SemicolonToken)
+                            return new ParseResult<Stmt>(new VarDecStmt(token.Type, tokens[startPosition + 1].Lexeme), startPosition + 3);
                         else
                             throw new ParseException("Missing Semicolon");
                     }
@@ -558,8 +563,8 @@ namespace Lang.Parser
                 case TokenType.VoidToken:
                     if (tokens[startPosition + 1].Type == TokenType.Identifier)
                     {
-                        if (tokens[startPosition + 1].Type == TokenType.SemicolonToken)
-                            return new ParseResult<VarDecStmt>(new VarDecStmt(token.Type, tokens[startPosition + 1].Lexeme), startPosition + 3);
+                        if (tokens[startPosition + 2].Type == TokenType.SemicolonToken)
+                            return new ParseResult<Stmt>(new VarDecStmt(token.Type, tokens[startPosition + 1].Lexeme), startPosition + 3);
                         else
                             throw new ParseException("Missing Semicolon");
                     }
@@ -569,29 +574,327 @@ namespace Lang.Parser
                     
             }
         }
-        public ParseResult<BreakStmt> ParseBreakStmt(int startPosition)
+
+         public ParseResult<Stmt[]> ParseVarDecComma(int startPosition) //FIXME
+        {
+            List<Exp> exps = new List<Exp>();
+            ParseResult<Exp> left = ParseExp(startPosition);
+            exps.Add(left.parseResult);
+            int nextPosition = left.nextPosition;
+            Token token = tokens[nextPosition];
+            while (token.Type == TokenType.CommaToken)
+            {
+                ParseResult<Exp> right = ParseExp(nextPosition + 1);
+                exps.Add(right.parseResult);
+                nextPosition = right.nextPosition;
+                token = tokens[nextPosition];
+            }
+            return new ParseResult<Exp[]>(exps.ToArray(), nextPosition);
+        }
+        public ParseResult<Stmt> ParseBreakStmt(int startPosition)
         {
             Token token = tokens[startPosition];
                 switch (token.Type)
             {
                 case TokenType.BreakToken:
                     if (tokens[startPosition + 1].Type == TokenType.SemicolonToken)
-                        return new ParseResult<BreakStmt>(new BreakStmt(), startPosition + 2);
+                        return new ParseResult<Stmt>(new BreakStmt(), startPosition + 2);
                     else
                         throw new ParseException("Missing Semicolon");
                 default:
                     throw new ParseException("defaulted in ParseBreakStmt");
             }
         }
+
+        public ParseResult<Stmt> ParseReturnStmt(int startPosition)
+        {
+            Token token = tokens[startPosition];
+            switch (token.Type)
+            {
+                case TokenType.ReturnToken:
+                    if (tokens[startPosition + 1].Type != TokenType.SemicolonToken){
+                        ParseResult<Exp> ReturnExp = ParseExp(startPosition + 1);
+                        return new ParseResult<Stmt>(new ReturnStmt(ReturnExp.parseResult), startPosition + 2);
+                    }
+                    else
+                        throw new ParseException("Missing Semicolon");
+                default:
+                    throw new ParseException("defaulted in ParseReturnStmt");
+            }
+        }
+
+
         public ParseResult<Stmt> ParseStmt(int startPosition)
         {
-            switch (Token.Type)
+            Token token = tokens[startPosition];
+            switch (token.Type)
             {
+                case TokenType.IntToken:
+                case TokenType.BooleanToken:
+                case TokenType.VoidToken:
+                    return ParseVarDecStmt(startPosition);
+
+                case TokenType.Identifier:
+                    if (tokens[startPosition + 1].Type == TokenType.EqualsToken)
+                    {
+                        ParseResult<Exp> exp = ParseExp(startPosition + 2);
+                        if (tokens[exp.nextPosition].Type == TokenType.SemicolonToken)
+                            return new ParseResult<Stmt>(new AssignmentStmt(new Identifier(token.Lexeme), exp.parseResult), exp.nextPosition + 1);
+                        else
+                            throw new ParseException("Missing Semicolon");
+                    }
+                    else
+                        throw new ParseException("Assignment Operator expected");
+                case TokenType.BreakToken:
+                    return ParseBreakStmt(startPosition);
+                case TokenType.ReturnToken:
+                    return ParseReturnStmt(startPosition);
+                case TokenType.OpenBracketToken:
+                    ParseResult<Stmt[]> block = ParseBlock(startPosition + 1);
+                    if (tokens[block.nextPosition].Type == TokenType.ClosedBracketToken)
+                        return new ParseResult<Stmt>(new BlockStmt(block.parseResult), block.nextPosition + 1);
+                    else
+                        throw new ParseException("Missing Closed Bracket");
+                case TokenType.WhileToken:
+                    if (tokens[startPosition + 1].Type == TokenType.OpenParenthesisToken)
+                    {
+                        ParseResult<Exp> exp = ParseExp(startPosition + 2);
+                        if (tokens[exp.nextPosition].Type == TokenType.CloseParenthesisToken)
+                        {
+                            ParseResult<Stmt> stmt = ParseStmt(exp.nextPosition + 1);
+                            return new ParseResult<Stmt>(new WhileStmt(exp.parseResult, stmt.parseResult), stmt.nextPosition);
+                        }
+                        else
+                            throw new ParseException("Missing Close Parenthesis");
+                    }
+                    else
+                        throw new ParseException("Missing Open Parenthesis");
+                case TokenType.IfToken:
+                    if (tokens[startPosition + 1].Type == TokenType.OpenParenthesisToken)
+                    {
+                        ParseResult<Exp> exp = ParseExp(startPosition + 2);
+                        if (tokens[exp.nextPosition].Type == TokenType.CloseParenthesisToken)
+                        {
+                            ParseResult<Stmt> stmt = ParseStmt(exp.nextPosition + 1);
+                            if (tokens[stmt.nextPosition].Type == TokenType.ElseToken)
+                            {
+                                ParseResult<Stmt> elseStmt = ParseStmt(stmt.nextPosition + 1);
+                                return new ParseResult<Stmt>(new IfStmt(exp.parseResult, stmt.parseResult, elseStmt.parseResult), elseStmt.nextPosition);
+                            }
+                            return new ParseResult<Stmt>(new IfStmt(exp.parseResult, stmt.parseResult), stmt.nextPosition);
+                        }
+                        else
+                            throw new ParseException("Missing Close Parenthesis");
+                    }
+                    else
+                        throw new ParseException("Missing Open Parenthesis");
+                
+                default:
+                    throw new ParseException("defaulted in ParseStmt");
 
             }
         }
+
+
+        public ParseResult<Stmt[]> ParseBlock(int startPosition)
+        {
+            List<Stmt> stmts = new List<Stmt>();
+            ParseResult<Stmt> stmt = ParseStmt(startPosition);
+            stmts.Add(stmt.parseResult);
+            int nextPosition = stmt.nextPosition;
+            Token token = tokens[nextPosition];
+            while (token.Type != TokenType.ClosedBracketToken)
+            {
+                ParseResult<Stmt> nextStmt = ParseStmt(nextPosition);
+                stmts.Add(nextStmt.parseResult);
+                nextPosition = nextStmt.nextPosition;
+                token = tokens[nextPosition];
+            }
+            return new ParseResult<Stmt[]>(stmts.ToArray(), nextPosition);
+        }
+
+        public ParseResult<Exp> ParseExp(int startPosition)
+        {
+            ParseResult<Exp> left = ParseMultExp(startPosition);
+            List<Exp> MultExps = new List<Exp>();
+            List<Op> Ops = new List<Op>();
+            int nextPosition = left.nextPosition;
+            if (left.nextPosition < tokens.Count)
+            {
+                Token token = tokens[nextPosition];
+                while (token.Type == TokenType.AddToken || token.Type == TokenType.SubToken)
+                {
+                    ParseResult<Op> op = ParseOp(left.nextPosition);
+                    ParseResult<Exp> right = ParseMultExp(op.nextPosition);
+                    nextPosition = right.nextPosition;
+                    token = tokens[nextPosition];
+                    MultExps.Add(right.parseResult);
+                    Ops.Add(op.parseResult);
+                }
+                
+               
+            }
+            if (Ops.Count > 0){
+                BinopExp finalExp = new BinopExp(left.parseResult, Ops[0], MultExps[0]);
+                for (int i = 1; i < Ops.Count; i++)
+                    {
+                        finalExp = new BinopExp(finalExp, Ops[i], MultExps[i]);
+                    }
+                return new ParseResult<Exp>(finalExp, nextPosition);
+            }
+                    
+            return new ParseResult<Exp>(left.parseResult, left.nextPosition);
+
+        }
+
+        public ParseResult<Exp> ParseMultExp(int startPosition)
+        {
+           ParseResult<Exp> left = ParseCallExp(startPosition);
+            List<Exp> CallExps = new List<Exp>();
+            List<Op> Ops = new List<Op>();
+            int nextPosition = left.nextPosition;
+            if (left.nextPosition < tokens.Count)
+            {
+                Token token = tokens[nextPosition];
+                while (token.Type == TokenType.MultToken || token.Type == TokenType.DivToken)
+                {
+                    ParseResult<Op> op = ParseOp(left.nextPosition);
+                    ParseResult<Exp> right = ParseCallExp(op.nextPosition);
+                    nextPosition = right.nextPosition;
+                    token = tokens[nextPosition];
+                    CallExps.Add(right.parseResult);
+                    Ops.Add(op.parseResult);
+                }
+                
+               
+            }
+            if (Ops.Count > 0){
+                BinopExp finalExp = new BinopExp(left.parseResult, Ops[0], CallExps[0]);
+                for (int i = 1; i < Ops.Count; i++)
+                    {
+                        finalExp = new BinopExp(finalExp, Ops[i], CallExps[i]);
+                    }
+                return new ParseResult<Exp>(finalExp, nextPosition);
+            }
+                    
+            return new ParseResult<Exp>(left.parseResult, left.nextPosition);
+        }
+
+        public ParseResult<Exp> ParseCallExp(int startPosition)
+        {
+           ParseResult<Exp> left = ParsePrimaryExp(startPosition);
+            List<Exp> MethodCallsExps = new List<Exp>();
+            int nextPosition = left.nextPosition;
+            if (left.nextPosition < tokens.Count)
+            {
+                Token token = tokens[nextPosition];
+                while (token.Type == TokenType.PeriodToken)
+                {
+                    ++nextPosition;
+                    ParseResult<Exp> right = ParsePrimaryExp(nextPosition);
+                    nextPosition = right.nextPosition;
+                    token = tokens[nextPosition];
+                    if (token.Type == TokenType.OpenParenthesisToken)
+                    {
+                        ParseResult<Exp[]> ParameterExp = ParseCommaExp(nextPosition + 1); 
+                        if (tokens[ParameterExp.nextPosition].Type == TokenType.CloseParenthesisToken)
+                        {
+                            MethodCallsExps.Add(new MethodCall(right.parseResult, ParameterExp.parseResult.ToArray()));
+                            nextPosition = ParameterExp.nextPosition + 1;
+                        }    
+                    }
+                    else
+                    {
+                        MethodCallsExps.Add(right.parseResult);
+                        break;
+                    }
+                    
+                }
+                
+               
+            }
+            if (MethodCallsExps.Count > 0){
+                BinopExp finalExp = new BinopExp(left.parseResult, new PeriodOp(), MethodCallsExps[0]);
+                for (int i = 1; i < MethodCallsExps.Count; i++)
+                    {
+                        finalExp = new BinopExp(finalExp, new PeriodOp(), MethodCallsExps[i]);
+                    }
+                return new ParseResult<Exp>(finalExp, nextPosition);
+            }
+                    
+            return new ParseResult<Exp>(left.parseResult, left.nextPosition); 
+        }
+
+        public ParseResult<Exp[]> ParseCommaExp(int startPosition)
+        {
+            List<Exp> exps = new List<Exp>();
+            ParseResult<Exp> left = ParseExp(startPosition);
+            exps.Add(left.parseResult);
+            int nextPosition = left.nextPosition;
+            Token token = tokens[nextPosition];
+            while (token.Type == TokenType.CommaToken)
+            {
+                ParseResult<Exp> right = ParseExp(nextPosition + 1);
+                exps.Add(right.parseResult);
+                nextPosition = right.nextPosition;
+                token = tokens[nextPosition];
+            }
+            return new ParseResult<Exp[]>(exps.ToArray(), nextPosition);
+        }
+        public ParseResult<Exp> ParsePrimaryExp(int startPosition){
+            Token token = tokens[startPosition];
+            switch (token.Type)
+            {
+                case TokenType.IntegerLiteral:
+                    return new ParseResult<Exp>(new IntegerExp(int.Parse(token.Lexeme)), startPosition + 1);
+                case TokenType.TrueToken:
+                    return new ParseResult<Exp>(new TrueExp(), startPosition + 1);
+                case TokenType.FalseToken:
+                    return new ParseResult<Exp>(new FalseExp(), startPosition + 1);
+                case TokenType.ThisToken:
+                    return new ParseResult<Exp>(new ThisExp(), startPosition + 1);
+                case TokenType.Identifier:
+                    return new ParseResult<Exp>(new Identifier(token.Lexeme), startPosition + 1);
+                case TokenType.NewToken:
+                    if (tokens[startPosition + 1].Type == TokenType.Identifier)
+                    {
+                        if (tokens[startPosition + 2].Type == TokenType.OpenParenthesisToken)
+                        {
+                            if (tokens[startPosition + 3].Type == TokenType.CloseParenthesisToken)
+                                return new ParseResult<Exp>(new NewExp(new Identifier(tokens[startPosition + 1].Lexeme), new Identifier(""), new Identifier("")), startPosition + 4);
+                            else
+                                throw new ParseException("Missing Close Parenthesis");
+                        }
+                        else
+                            throw new ParseException("Missing Open Parenthesis");
+                    }
+                    else
+                        throw new ParseException("Identifier expected");
+                case TokenType.OpenParenthesisToken:
+                    ParseResult<Exp> OpenParenthesisExp = ParseExp(startPosition + 1);
+                    if (tokens[OpenParenthesisExp.nextPosition].Type == TokenType.CloseParenthesisToken)
+                        return new ParseResult<Exp>(OpenParenthesisExp.parseResult, OpenParenthesisExp.nextPosition + 1);
+                    else
+                        throw new ParseException("Missing Close Parenthesis");
+                case TokenType.PrintlnToken:
+                    if (tokens[startPosition + 1].Type == TokenType.OpenParenthesisToken)
+                    {
+                        ParseResult<Exp> PrintlnExp = ParseExp(startPosition + 2);
+                        if (tokens[PrintlnExp.nextPosition].Type == TokenType.CloseParenthesisToken)
+                            return new ParseResult<Exp>(new Println(PrintlnExp.parseResult), PrintlnExp.nextPosition + 1);
+                        else
+                            throw new ParseException("Missing Close Parenthesis");
+                    }
+                    else
+                        throw new ParseException("Missing Open Parenthesis");
+                default:
+                    throw new ParseException("Failed to Parse Primary Expression.");
+            }
+        }    
+
     }
 
+    
     public class ParseException : Exception
     {
         public ParseException(string message) : base(message)
