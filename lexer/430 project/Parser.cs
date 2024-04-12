@@ -580,9 +580,10 @@ namespace Lang.Parser
                     else
                         throw new ParseException("Missing Semicolon");
                 default:
-                    throw new ParseException("defaulted in ParseBreakStmt");
+                    throw new ParseException("Defaulted in ParseBreakStmt");
             }
         }
+
         public ParseResult<Stmt> ParseStmt(int startPosition)
         {
             switch (Token.Type)
@@ -590,7 +591,13 @@ namespace Lang.Parser
 
             }
         }
+        public ParseResult<Exp> ParseExp(int startPosition)
+        {
+
+        }
     }
+
+
 
     public class ParseException : Exception
     {
