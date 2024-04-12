@@ -10,7 +10,6 @@ namespace Lang.Lexer
         StringLiteral = 4,
         IntegerLiteral = 5,
         IntToken = 6,
-        StringToken = 39,
         BooleanToken = 7,
         VoidToken = 8,
         ThisToken = 9,
@@ -26,6 +25,8 @@ namespace Lang.Lexer
         MethodToken = 19,
         InitToken = 20,
         SuperToken = 21,
+        ClassToken = 39,
+        ExtendsToken = 41,
 
         MultToken = 22,
         DivToken = 23,
@@ -341,6 +342,16 @@ namespace Lang.Lexer
                     {
                         lexemeLength = count;
                         return TokenType.WhileToken;
+                    }
+                case "class":
+                    {
+                        lexemeLength = count;
+                        return TokenType.ClassToken;
+                    }
+                case "extends":
+                    {
+                        lexemeLength = count;
+                        return TokenType.ExtendsToken;
                     }
             }
 

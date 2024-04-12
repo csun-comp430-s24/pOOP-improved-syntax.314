@@ -1,4 +1,6 @@
 using Lang.Lexer;
+using System.Reflection;
+using static Lang.Parser.Parser;
 
 namespace Lang.Parser
 {
@@ -252,20 +254,82 @@ namespace Lang.Parser
             }
         }
 
-        public class IntType : Type { }
-        public class BooleanType : Type { }
+        public class IntType : Type
+        {
+            public Boolean Equals(object other)
+            {
+                return other is IntType;
+            }
+            public String ToString()
+            {
+                return "IntType()";
+            }
+        }
+
+        public class BooleanType : Type
+        {
+            public Boolean Equals(object other)
+            {
+                return other is BooleanType;
+            }
+            public String ToString()
+            {
+                return "BooleanType()";
+            }
+        }
         
-        public class VoidType : Type { }
-        public class CLassNameType : Type { }
+        public class VoidType : Type
+        {
+            public Boolean Equals(object other)
+            {
+                return other is VoidType;
+            }
+            public String ToString()
+            {
+                return "VoidType()";
+            }
+        }
+
+        public class CLassNameType : Type 
+        {
+            public string className;
+
+            public CLassNameType(string className)
+            {
+                this.className = className;
+            }
+        }
+
+        public Type tokenToDataType(Token token)
+        {
+            switch(token.Type)
+            {
+                case TokenType.IntToken:
+                    return new IntType();
+                case TokenType.BooleanToken:
+                    return new BooleanType();
+                case TokenType.VoidToken:
+                    return new VoidType();
+                case TokenType.Identifier:
+                    return new CLassNameType(token.Lexeme);
+                default:
+                    throw new ParseException("Can't parse type " + token.Type);
+            }
+        }
+
+        public bool canBeType(Token token)
+        {
+            return token.Type == TokenType.IntToken || token.Type == TokenType.BooleanToken || token.Type == TokenType.VoidToken || token.Type == TokenType.Identifier;
+        }
 
         public class VarType : Vardec { }
 
         public class VarDecStmt : Stmt
         {
-            public TokenType varType;
+            public Type varType;
             public string varIdentifier;
 
-            public VarDecStmt(TokenType varType, string varIdentifier)
+            public VarDecStmt(Type varType, string varIdentifier)
             {
                 this.varType = varType;
                 this.varIdentifier = varIdentifier;
@@ -343,7 +407,7 @@ namespace Lang.Parser
         {
             public Exp Condition;
             public Stmt ifBody;
-            public Stmt elseBody;
+            public Stmt? elseBody;
             public IfStmt(Exp Condition, Stmt ifBody, Stmt elseBody)
             {
                 this.Condition = Condition;
@@ -351,7 +415,7 @@ namespace Lang.Parser
                 this.elseBody = elseBody;
             }
 
-             public IfStmt(Exp Condition, Stmt ifBody)
+            public IfStmt(Exp Condition, Stmt ifBody)
             {
                 this.Condition = Condition;
                 this.ifBody = ifBody;
@@ -362,7 +426,7 @@ namespace Lang.Parser
                 if (other is IfStmt)
                 {
                     IfStmt e = (IfStmt)other;
-                    return e.Condition.Equals(Condition) && e.ifBody.Equals(ifBody) && e.elseBody.Equals(elseBody);
+                    return e.Condition.Equals(Condition) && e.ifBody.Equals(ifBody) && ((elseBody == null && e.elseBody == null) || (e.elseBody != null && e.elseBody.Equals(elseBody)));
                 }
                 else
                 {
@@ -393,25 +457,24 @@ namespace Lang.Parser
 
         public class Method : MethodDef
         {
-            public MethodDef left;
-            public MethodDef mleft;
-            public MethodDef mid;
-            public MethodDef mright;
-            public MethodDef[] right;
-            public Method(MethodDef left, MethodDef mleft, MethodDef mid, MethodDef mright, MethodDef[] right)
+            public Identifier methodName;
+            public Type returnType;
+            public Stmt[] parameters;
+            public Stmt methodBody;
+
+            public Method(Identifier methodName, Type returnType, Stmt[] parameters, Stmt methodBody)
             {
-                this.left = left;
-                this.mleft = mleft;
-                this.mid = mid;
-                this.mright = mright;
-                this.right = right;
+                this.methodName = methodName;
+                this.returnType = returnType;
+                this.parameters = parameters;
+                this.methodBody = methodBody;
             }
             public Boolean Equals(object other)
             {
                 if (other is Method)
                 {
                     Method e = (Method)other;
-                    return e.left.Equals(left) && e.mleft.Equals(mleft) && e.mid.Equals(mid) && e.mright.Equals(mright) && e.right.Equals(right);
+                    return e.methodName.Equals(methodName) && e.returnType.Equals(returnType) && e.parameters.Equals(parameters) && e.methodBody.Equals(methodBody);
                 }
                 else
                 {
@@ -422,25 +485,33 @@ namespace Lang.Parser
 
         public class Con : Constructor
         {
-            public Constructor left;
-            public Constructor mleft;
-            public Constructor mid;
-            public Constructor mright;
-            public Constructor[] right;
-            public Con(Constructor left, Constructor mleft, Constructor mid, Constructor mright, Constructor[] right)
+            public Stmt[] parameters;
+            public bool callsSuper;
+            public Exp[]? superParameters;
+            public Stmt constructorBody;
+            
+            public Con(Stmt[] parameters, Exp[]? superParameters, Stmt constructorBody)
             {
-                this.left = left;
-                this.mleft = mleft;
-                this.mid = mid;
-                this.mright = mright;
-                this.right = right;
+                this.parameters = parameters;
+                this.callsSuper = true;
+                this.superParameters = superParameters;
+                this.constructorBody = constructorBody;
             }
+
+            public Con(Stmt[] parameters, Stmt constructorBody)
+            {
+                this.parameters = parameters;
+                this.callsSuper = false;
+                this.superParameters = null;
+                this.constructorBody = constructorBody;
+            }
+
             public Boolean Equals(object other)
             {
                 if (other is Con)
                 {
                     Con e = (Con)other;
-                    return e.left.Equals(left) && e.mleft.Equals(mleft) && e.mid.Equals(mid) && e.mright.Equals(mright) && e.right.Equals(right);
+                    return e.parameters.Equals(parameters) && e.constructorBody.Equals(constructorBody) && e.callsSuper.Equals(callsSuper) && (callsSuper && ((superParameters == null && e.superParameters == null) || e.superParameters != null && e.superParameters.Equals(superParameters)));
                 }
                 else
                 {
@@ -451,29 +522,27 @@ namespace Lang.Parser
 
         public class Class : ClassDef
         {
-            public ClassDef left;
-            public ClassDef Identifier1;
-            public ClassDef Extender;
-            public ClassDef Identifier2;
-            public ClassDef Vardec;
-            public ClassDef Constructor;
-            public ClassDef[] MethodDef;
-            public Class(ClassDef left, ClassDef identifier1, ClassDef extender, ClassDef identifier2, ClassDef vardec, ClassDef constructor, ClassDef[] methodDef)
+            public Identifier className;
+            public Identifier? extendingClassName;
+            public Stmt[] localVarDecs;
+            public Constructor constructor;
+            public MethodDef[] classMethods;
+
+            public Class(Identifier className, Identifier? extendingClassName, Stmt[] localVarDecs, Constructor constructor, MethodDef[] classMethods)
             {
-                this.left = left;
-                this.Identifier1 = identifier1;
-                this.Extender = extender;
-                this.Identifier2 = identifier2;
-                this.Vardec = vardec;
-                this.Constructor = constructor;
-                this.MethodDef = methodDef;
+                this.className = className;
+                this.extendingClassName = extendingClassName;
+                this.localVarDecs = localVarDecs;
+                this.constructor = constructor;
+                this.classMethods = classMethods;
             }
+
             public Boolean Equals(object other)
             {
                 if (other is Class)
                 {
                     Class e = (Class)other;
-                    return e.left.Equals(left) && e.Identifier1.Equals(Identifier1) && e.Extender.Equals(Extender) && e.Identifier2.Equals(Identifier2) && e.Constructor.Equals(Constructor) && e.MethodDef.Equals(MethodDef);
+                    return e.className.Equals(className) && ((extendingClassName == null && e.extendingClassName == null) || (e.extendingClassName != null && e.extendingClassName.Equals(extendingClassName))) && e.localVarDecs.Equals(localVarDecs) && e.constructor.Equals(constructor) && e.classMethods.Equals(classMethods);
                 }
                 else
                 {
@@ -484,11 +553,11 @@ namespace Lang.Parser
 
         public class Code : Program
         {
-            public Program[] classdef;
-            public Program[] stmts;
-            public Code(Program[] classdef, Program[] stmts)
+            public ClassDef[] classDefs;
+            public Stmt[] stmts;
+            public Code(ClassDef[] classDefs, Stmt[] stmts)
             {
-                this.classdef = classdef;
+                this.classDefs = classDefs;
                 this.stmts = stmts;
             }
             public Boolean Equals(object other)
@@ -496,7 +565,7 @@ namespace Lang.Parser
                 if (other is Code)
                 {
                     Code e = (Code)other;
-                    return e.classdef.Equals(classdef) && e.stmts.Equals(stmts);
+                    return e.classDefs.Equals(classDefs) && e.stmts.Equals(stmts);
                 }
                 else
                 {
@@ -505,14 +574,36 @@ namespace Lang.Parser
             }
         }
 
-        public void ParseTokens()
+        public ParseResult<Program> ParseProgram(int startPosition)
         {
-            int position = 0;
+            List<ClassDef> classDefs = new List<ClassDef>();
+            List<Stmt> stmts = new List<Stmt>();
 
-            while (position < tokens.Count)
+            int currentPosition = startPosition;
+            Token currentToken = tokens[currentPosition];
+
+            while (currentPosition < tokens.Count && currentToken.Type == TokenType.ClassToken)
             {
-                break;
+                ParseResult<ClassDef> classDef = ParseClassDef(currentPosition);
+                classDefs.Add(classDef.parseResult);
+                currentPosition = classDef.nextPosition;
+                currentToken = tokens[currentPosition];
             }
+
+            ParseResult<Stmt> programStmt = ParseStmt(currentPosition);
+            stmts.Add(programStmt.parseResult);
+            currentPosition = programStmt.nextPosition;
+            currentToken = tokens[currentPosition];
+
+            while (currentPosition < tokens.Count)
+            {
+                programStmt = ParseStmt(currentPosition);
+                stmts.Add(programStmt.parseResult);
+                currentPosition = programStmt.nextPosition;
+                currentToken = tokens[currentPosition];
+            }
+
+            return new ParseResult<Program>(new Code(classDefs.ToArray(), stmts.ToArray()), currentPosition + 1);
         }
 
         public ParseResult<Op> ParseOp(int startPosition)
@@ -537,60 +628,41 @@ namespace Lang.Parser
         public ParseResult<Stmt> ParseVarDecStmt(int startPosition)
         {
             Token token = tokens[startPosition];
-            switch (token.Type)
+
+            if (tokens[startPosition + 1].Type != TokenType.Identifier)
             {
-                case TokenType.IntToken:
-                    if (tokens[startPosition + 1].Type == TokenType.Identifier)
-                    {
-                        if (tokens[startPosition + 2].Type == TokenType.SemicolonToken)
-                            return new ParseResult<Stmt>(new VarDecStmt(token.Type, tokens[startPosition + 1].Lexeme), startPosition + 3);
-                        else
-                            throw new ParseException("Missing Semicolon");
-                    }
-                    else
-                        throw new ParseException("Identifier expected");
-
-                case TokenType.BooleanToken:
-                    if (tokens[startPosition + 1].Type == TokenType.Identifier)
-                    {
-                        if (tokens[startPosition + 2].Type == TokenType.SemicolonToken)
-                            return new ParseResult<Stmt>(new VarDecStmt(token.Type, tokens[startPosition + 1].Lexeme), startPosition + 3);
-                        else
-                            throw new ParseException("Missing Semicolon");
-                    }
-                    throw new ParseException("Identifier expected");
-
-                case TokenType.VoidToken:
-                    if (tokens[startPosition + 1].Type == TokenType.Identifier)
-                    {
-                        if (tokens[startPosition + 2].Type == TokenType.SemicolonToken)
-                            return new ParseResult<Stmt>(new VarDecStmt(token.Type, tokens[startPosition + 1].Lexeme), startPosition + 3);
-                        else
-                            throw new ParseException("Missing Semicolon");
-                    }
-                    throw new ParseException("Identifier expected");
-                default:
-                    throw new ParseException("Defaulted in ParseVarDecStmt");
-                    
+                throw new ParseException("Identifier expected");
             }
+
+            if (canBeType(token))
+            {
+                return new ParseResult<Stmt>(new VarDecStmt(tokenToDataType(token), tokens[startPosition + 1].Lexeme), startPosition + 3);
+            }
+
+            throw new ParseException("Variable type expected");
         }
 
-         public ParseResult<Stmt[]> ParseVarDecComma(int startPosition) //FIXME
+        public ParseResult<Stmt[]> ParseCommaVarDec(int startPosition)
         {
-            List<Exp> exps = new List<Exp>();
-            ParseResult<Exp> left = ParseExp(startPosition);
-            exps.Add(left.parseResult);
-            int nextPosition = left.nextPosition;
-            Token token = tokens[nextPosition];
-            while (token.Type == TokenType.CommaToken)
+            List<Stmt> varDecs = new List<Stmt>();
+            ParseResult<Stmt> startVarDec = ParseVarDecStmt(startPosition);
+            
+            varDecs.Add(startVarDec.parseResult);
+
+            int nextPosition = startVarDec.nextPosition;
+            Token currentToken = tokens[nextPosition];
+
+            while (currentToken.Type == TokenType.CommaToken)
             {
-                ParseResult<Exp> right = ParseExp(nextPosition + 1);
-                exps.Add(right.parseResult);
-                nextPosition = right.nextPosition;
-                token = tokens[nextPosition];
+                ParseResult<Stmt> nextVarDec = ParseVarDecStmt(nextPosition + 1);
+                varDecs.Add(nextVarDec.parseResult);
+                nextPosition = nextVarDec.nextPosition;
+                currentToken = tokens[nextPosition];
             }
-            return new ParseResult<Stmt[]>(, nextPosition);
+
+            return new ParseResult<Stmt[]>(varDecs.ToArray(), nextPosition);
         }
+
         public ParseResult<Stmt> ParseBreakStmt(int startPosition)
         {
             Token token = tokens[startPosition];
@@ -632,8 +704,13 @@ namespace Lang.Parser
                 case TokenType.IntToken:
                 case TokenType.BooleanToken:
                 case TokenType.VoidToken:
-                    return ParseVarDecStmt(startPosition);
-
+                    ParseResult<Stmt> varDec = ParseVarDecStmt(startPosition);
+                    if (tokens[varDec.nextPosition].Type == TokenType.SemicolonToken)
+                    {
+                        return varDec;
+                    }
+                    else
+                        throw new ParseException("Missing Semicolon");
                 case TokenType.Identifier:
                     if (tokens[startPosition + 1].Type == TokenType.EqualsToken)
                     {
@@ -650,11 +727,8 @@ namespace Lang.Parser
                 case TokenType.ReturnToken:
                     return ParseReturnStmt(startPosition);
                 case TokenType.OpenBracketToken:
-                    ParseResult<Stmt[]> block = ParseBlock(startPosition + 1);
-                    if (tokens[block.nextPosition].Type == TokenType.ClosedBracketToken)
-                        return new ParseResult<Stmt>(new BlockStmt(block.parseResult), block.nextPosition + 1);
-                    else
-                        throw new ParseException("Missing Closed Bracket");
+                    ParseResult<Stmt> block = ParseBlock(startPosition + 1);
+                    return new ParseResult<Stmt>(block.parseResult, block.nextPosition + 1);
                 case TokenType.WhileToken:
                     if (tokens[startPosition + 1].Type == TokenType.OpenParenthesisToken)
                     {
@@ -695,8 +769,7 @@ namespace Lang.Parser
             }
         }
 
-
-        public ParseResult<Stmt[]> ParseBlock(int startPosition)
+        public ParseResult<Stmt> ParseBlock(int startPosition)
         {
             List<Stmt> stmts = new List<Stmt>();
             ParseResult<Stmt> stmt = ParseStmt(startPosition);
@@ -710,7 +783,248 @@ namespace Lang.Parser
                 nextPosition = nextStmt.nextPosition;
                 token = tokens[nextPosition];
             }
-            return new ParseResult<Stmt[]>(stmts.ToArray(), nextPosition);
+            return new ParseResult<Stmt>(new BlockStmt(stmts.ToArray()), nextPosition + 1);
+        }
+
+        public ParseResult<MethodDef> ParseMethodDef(int startposition)
+        {
+            Identifier methodName;
+            Type returnType;
+            Stmt[] parameters;
+            ParseResult<Stmt> methodBody;
+
+            int currentPosition = startposition;
+            Token currentToken = tokens[currentPosition];
+
+            // Must start with `method`
+            if (currentToken.Type != TokenType.MethodToken)
+            {
+                throw new ParseException("Invalid start of Method Definition");
+            }
+
+            currentPosition++;
+            currentToken = tokens[currentPosition];
+            
+            // Must be followed with an Identifier
+            if (currentToken.Type != TokenType.Identifier)
+            {
+                throw new ParseException("Method Name is not an Identifier");
+            }
+
+            methodName = new Identifier(currentToken.Lexeme);
+
+            currentPosition++;
+            currentToken = tokens[currentPosition];
+
+            if (currentToken.Type != TokenType.OpenParenthesisToken)
+            {
+                throw new ParseException("Missing Open Parenthesis for Method Definition");
+            }
+
+            ParseResult<Stmt[]> parameterVarDecs = ParseCommaVarDec(currentPosition + 1);
+            parameters = parameterVarDecs.parseResult;
+            currentPosition = parameterVarDecs.nextPosition;
+
+            if (currentToken.Type != TokenType.CloseParenthesisToken)
+            {
+                throw new ParseException("Missing Closing Parenthesis not found for Method Definition");
+            }
+
+            currentPosition++;
+            currentToken = tokens[currentPosition];
+
+            if (!canBeType(currentToken))
+            {
+                throw new ParseException("Invalid Method Type");
+            }
+
+            returnType = tokenToDataType(currentToken);
+
+            currentPosition++;
+            currentToken = tokens[currentPosition];
+
+            if (currentToken.Type != TokenType.OpenBracketToken)
+            {
+                throw new ParseException("Missing Curly Brackets for Method Definition");
+            }
+
+            methodBody = ParseBlock(currentPosition + 1);
+
+            return new ParseResult<MethodDef>(new Method(methodName, returnType, parameters, methodBody.parseResult), methodBody.nextPosition);
+        }
+
+        public ParseResult<Constructor> ParseConstructor(int startPosition)
+        {
+            Stmt[] parameters;
+            bool callsSuper = false;
+            Exp[]? superParameters = null;
+            ParseResult<Stmt> constructorBody;
+
+            int currentPosition = startPosition;
+            Token currentToken = tokens[currentPosition];
+
+            if (currentToken.Type != TokenType.InitToken)
+            {
+                throw new ParseException("Invalid Start of Constructor");
+            }
+
+            currentPosition++;
+            currentToken = tokens[currentPosition];
+
+            if (currentToken.Type != TokenType.OpenParenthesisToken)
+            {
+                throw new ParseException("Missing Open Parenthesis for Constructor");
+            }
+
+            ParseResult<Stmt[]> parameterVarDecs = ParseCommaVarDec(currentPosition + 1);
+            parameters = parameterVarDecs.parseResult;
+            currentPosition = parameterVarDecs.nextPosition;
+
+            if (currentToken.Type != TokenType.CloseParenthesisToken)
+            {
+                throw new ParseException("Missing Closing Parenthesis not found for Constructor");
+            }
+
+            currentPosition++;
+            currentToken = tokens[currentPosition];
+
+            if (currentToken.Type != TokenType.OpenBracketToken)
+            {
+                throw new ParseException("Missing Curly Brackets for Constructor");
+            }
+
+            currentPosition++;
+            currentToken = tokens[currentPosition];
+
+            if (currentToken.Type == TokenType.SuperToken)
+            {
+                callsSuper = true;
+                currentPosition++;
+                currentToken = tokens[currentPosition];
+
+                if (currentToken.Type != TokenType.OpenParenthesisToken)
+                {
+                    throw new ParseException("Missing Open Parenthesis for Super");
+                }
+
+                ParseResult<Exp[]> superParameterExps = ParseCommaExp(currentPosition + 1);
+                superParameters = superParameterExps.parseResult;
+                currentPosition = superParameterExps.nextPosition;
+
+                if (currentToken.Type != TokenType.CloseParenthesisToken)
+                {
+                    throw new ParseException("Missing Closing Parenthesis not found for Super");
+                }
+                if (tokens[currentPosition + 1].Type != TokenType.SemicolonToken)
+                {
+                    throw new ParseException("Missing Semicolon for Super");
+                }
+
+                currentPosition += 2;
+                currentToken = tokens[currentPosition];
+            }
+
+            constructorBody = ParseBlock(currentPosition);
+
+            if (callsSuper)
+            {
+                return new ParseResult<Constructor>(new Con(parameters, superParameters, constructorBody.parseResult), constructorBody.nextPosition);
+            }
+
+            return new ParseResult<Constructor>(new Con(parameters, constructorBody.parseResult), constructorBody.nextPosition);
+        }
+
+        public ParseResult<ClassDef> ParseClassDef(int startPosition)
+        {
+            Identifier className;
+            Identifier? extendedClassName = null;
+            List<Stmt> localVarDecs = new List<Stmt>();
+            ParseResult<Constructor> constructor;
+            List<MethodDef> methodDefs = new List<MethodDef>();
+
+            int currentPosition = startPosition;
+            Token currentToken = tokens[currentPosition];
+
+            if (currentToken.Type != TokenType.ClassToken)
+            {
+                throw new ParseException("Invalid Start of Class Definition");
+            }
+
+            currentPosition++;
+            currentToken = tokens[currentPosition];
+
+            if (currentToken.Type != TokenType.Identifier)
+            {
+                throw new ParseException("Invalid Class Definition Identifier");
+            }
+
+            className = new Identifier(currentToken.Lexeme);
+            currentPosition++;
+            currentToken = tokens[currentPosition];
+
+            if (currentToken.Type == TokenType.ExtendsToken)
+            {
+                currentPosition++;
+                currentToken = tokens[currentPosition];
+
+                if (currentToken.Type != TokenType.Identifier)
+                {
+                    throw new ParseException("Invalid Extended Class Identifier");
+                }
+
+                extendedClassName = new Identifier(currentToken.Lexeme);
+
+                currentPosition++;
+                currentToken = tokens[currentPosition];
+            }
+
+            if (currentToken.Type != TokenType.OpenBracketToken)
+            {
+                throw new ParseException("Missing Opening Curly Bracket for Class Definition");
+            }
+
+            currentPosition++;
+            currentToken = tokens[currentPosition];
+
+            while (canBeType(currentToken))
+            {
+                if (tokens[currentPosition + 2].Type != TokenType.SemicolonToken)
+                {
+                    throw new ParseException("Missing Semicolon in Class Definition");
+                }
+
+                ParseResult<Stmt> varDec = ParseVarDecStmt(currentPosition);
+                localVarDecs.Add(varDec.parseResult);
+                currentPosition += 3;
+                currentToken = tokens[currentPosition];
+            }
+
+            if (currentToken.Type != TokenType.InitToken)
+            {
+                throw new ParseException("Missing Constructor in Class Definition");
+            }
+
+            constructor = ParseConstructor(currentPosition);
+            currentPosition = constructor.nextPosition;
+            currentToken = tokens[currentPosition];
+
+            while (currentToken.Type == TokenType.MethodToken)
+            {
+                ParseResult<MethodDef> methodDef = ParseMethodDef(currentPosition);
+                methodDefs.Add(methodDef.parseResult);
+                currentPosition += methodDef.nextPosition;
+                currentToken = tokens[currentPosition];
+            }
+
+            currentPosition++;
+            currentToken = tokens[currentPosition];
+
+            if (currentToken.Type != TokenType.ClosedBracketToken)
+            {
+                throw new ParseException("Missing Closing Curly Bracket for Class Definition");
+            }
+
+            return new ParseResult<ClassDef>(new Class(className, extendedClassName, localVarDecs.ToArray(), constructor.parseResult, methodDefs.ToArray()), currentPosition + 1);
         }
 
         public ParseResult<Exp> ParseExp(int startPosition)
@@ -808,10 +1122,7 @@ namespace Lang.Parser
                         MethodCallsExps.Add(right.parseResult);
                         break;
                     }
-                    
                 }
-                
-               
             }
             if (MethodCallsExps.Count > 0){
                 BinopExp finalExp = new BinopExp(left.parseResult, new PeriodOp(), MethodCallsExps[0]);
