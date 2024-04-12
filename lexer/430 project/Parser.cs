@@ -589,7 +589,7 @@ namespace Lang.Parser
                 nextPosition = right.nextPosition;
                 token = tokens[nextPosition];
             }
-            return new ParseResult<Exp[]>(exps.ToArray(), nextPosition);
+            return new ParseResult<Stmt[]>(, nextPosition);
         }
         public ParseResult<Stmt> ParseBreakStmt(int startPosition)
         {
