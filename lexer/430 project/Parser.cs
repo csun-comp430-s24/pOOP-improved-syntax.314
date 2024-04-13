@@ -400,10 +400,10 @@ namespace Lang.Parser
         public class BreakStmt : Stmt { }
         public class ReturnStmt : Stmt
         {
-            public Exp left;
+            public Exp? left;
             
 
-            public ReturnStmt(Exp left)
+            public ReturnStmt(Exp? left)
             {
                 this.left = left;
             }
@@ -412,7 +412,7 @@ namespace Lang.Parser
                 if (other is ReturnStmt)
                 {
                     ReturnStmt e = (ReturnStmt)other;
-                    return e.left.Equals(left);
+                    return (left == null && e.left == null) || (e.left != null && e.left.Equals(left));
                 }
                 else
                 {
@@ -469,6 +469,16 @@ namespace Lang.Parser
                 {
                     return false;
                 }
+            }
+
+            public override string ToString()
+            {
+                string result = "";
+                foreach (Stmt stmt in Block)
+                {
+                    result += $"\t{stmt.ToString()}\n";
+                }
+                return $"BlockStmt(\n{result})";
             }
         }
 
@@ -695,18 +705,20 @@ namespace Lang.Parser
         public ParseResult<Stmt> ParseReturnStmt(int startPosition)
         {
             Token token = tokens[startPosition];
-            switch (token.Type)
-            {
-                case TokenType.ReturnToken:
-                    if (tokens[startPosition + 1].Type != TokenType.SemicolonToken){
-                        ParseResult<Exp> ReturnExp = ParseExp(startPosition + 1);
-                        return new ParseResult<Stmt>(new ReturnStmt(ReturnExp.parseResult), startPosition + 2);
-                    }
-                    else
-                        throw new ParseException("Missing Semicolon");
-                default:
-                    throw new ParseException("defaulted in ParseReturnStmt");
+            if (token.Type == TokenType.ReturnToken)
+            { 
+                if (tokens[startPosition + 1].Type != TokenType.SemicolonToken)
+                {
+                    ParseResult<Exp> ReturnExp = ParseExp(startPosition + 1);
+                    return new ParseResult<Stmt>(new ReturnStmt(ReturnExp.parseResult), ReturnExp.nextPosition);
+                }
+                else
+                {
+                    return new ParseResult<Stmt>(new ReturnStmt(null), startPosition + 1);
+                }
             }
+
+            throw new ParseException("defaulted in ParseReturnStmt");
         }
 
 
@@ -739,7 +751,8 @@ namespace Lang.Parser
                 case TokenType.BreakToken:
                     return ParseBreakStmt(startPosition);
                 case TokenType.ReturnToken:
-                    return ParseReturnStmt(startPosition);
+                    ParseResult<Stmt> returnStmt = ParseReturnStmt(startPosition);
+                    return new ParseResult<Stmt>(returnStmt.parseResult, returnStmt.nextPosition + 1);
                 case TokenType.OpenBracketToken:
                     ParseResult<Stmt> block = ParseBlock(startPosition + 1);
                     return new ParseResult<Stmt>(block.parseResult, block.nextPosition + 1);

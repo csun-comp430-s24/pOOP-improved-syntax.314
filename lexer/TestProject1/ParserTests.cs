@@ -40,4 +40,45 @@ public class ParserTests
         Assert.IsTrue(stmt.varIdentifier is Parser.Identifier);
         Assert.IsTrue(stmt.varIdentifier.value.Equals("x"));
     }
+
+    [TestMethod]
+    public void Parser_ShouldParseReturnStmt()
+    {
+        string source = "return x;";
+
+        Tokenizer tokenizer = new Tokenizer(source);
+        List<Token> tokens = tokenizer.GetAllTokens();
+
+        Parser parser = new Parser(tokens);
+        var ast = parser.ParseProgram(0);
+        Parser.Code code = (Parser.Code)ast.parseResult;
+
+        Parser.ReturnStmt stmt = (Parser.ReturnStmt)code.stmts[0];
+
+        Assert.IsNotNull(stmt);
+        Assert.IsTrue(stmt.left is Parser.Identifier);
+
+        Parser.Identifier returnIdentifier = (Parser.Identifier)stmt.left;
+        Assert.IsTrue(returnIdentifier.Equals(new Parser.Identifier("x")));
+    }
+
+    [TestMethod]
+    public void Parser_ShouldParseBlockStmt()
+    {
+        string source = "{int x;return;}";
+
+        Tokenizer tokenizer = new Tokenizer(source);
+        List<Token> tokens = tokenizer.GetAllTokens();
+
+        Parser parser = new Parser(tokens);
+        var ast = parser.ParseProgram(0);
+        Parser.Code code = (Parser.Code)ast.parseResult;
+
+        Parser.BlockStmt block = (Parser.BlockStmt)code.stmts[0];
+        Parser.Stmt[] blockStmts = block.Block;
+
+        Assert.IsNotNull(blockStmts);
+        Assert.IsTrue(blockStmts[0] is Parser.VarDecStmt);
+        Assert.IsTrue(blockStmts[1] is Parser.ReturnStmt);
+    }
 }
