@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "AnBW5s0xwAxiiS6IYgEazQGxtDYmu7DMN924cdBKj2T5J7Mf8TTwpPdGkBzfrlAcwrYKgWOUF69Es9t+6Fd9zA==",
+  "dgSpecHash": "zkEOtm2ahiUxRSxjkNLOHlFxoS843y9bHiMuFrdy6Toqu/nb4VEUVO+VXxaAaTP7ByqXD+Ea2HooqUgK6QeXQg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\twinx\\OneDrive\\Documents\\GitHub\\pOOP-improved-syntax.314-1\\lexer\\430 project\\430 project.csproj",
+  "projectFilePath": "C:\\Users\\twinx\\OneDrive\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\twinx\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.29\\microsoft.netcore.app.ref.6.0.29.nupkg.sha512",
     "C:\\Users\\twinx\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.29\\microsoft.windowsdesktop.app.ref.6.0.29.nupkg.sha512",

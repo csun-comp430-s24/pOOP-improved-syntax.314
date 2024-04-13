@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "//nXVDiGcK6d9cXV9SBxD70O5jyLnfZaSEgsRI4Io68DBspDEY7qWuENYD1T2k3jXzDPbPyl5ITZWn7IJdMz3A==",
+  "dgSpecHash": "SrLYpcQuxNeuMuxzelsDQFYLYl22mLFZCBBE7DJTSfbocb+9IFa+d7cJ+qJDhYWYZqcRbYM0qUhlCx7F9/t4+A==",
   "success": true,
-  "projectFilePath": "C:\\Users\\twinx\\OneDrive\\Documents\\GitHub\\pOOP-improved-syntax.314-1\\lexer\\TestProject1\\TestProject1.csproj",
+  "projectFilePath": "C:\\Users\\twinx\\OneDrive\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\TestProject1\\TestProject1.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\twinx\\.nuget\\packages\\coverlet.collector\\6.0.0\\coverlet.collector.6.0.0.nupkg.sha512",
     "C:\\Users\\twinx\\.nuget\\packages\\microsoft.codecoverage\\17.8.0\\microsoft.codecoverage.17.8.0.nupkg.sha512",

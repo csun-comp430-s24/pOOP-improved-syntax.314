@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\twinx\\OneDrive\\Documents\\GitHub\\pOOP-improved-syntax.314-1\\lexer\\430 project\\430 project.csproj",
+      "projectUniqueName": "C:\\Users\\twinx\\OneDrive\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj",
       "projectName": "430 project",
-      "projectPath": "C:\\Users\\twinx\\OneDrive\\Documents\\GitHub\\pOOP-improved-syntax.314-1\\lexer\\430 project\\430 project.csproj",
+      "projectPath": "C:\\Users\\twinx\\OneDrive\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj",
       "packagesPath": "C:\\Users\\twinx\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\twinx\\OneDrive\\Documents\\GitHub\\pOOP-improved-syntax.314-1\\lexer\\430 project\\obj\\",
+      "outputPath": "C:\\Users\\twinx\\OneDrive\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\twinx\\AppData\\Roaming\\NuGet\\NuGet.Config"
