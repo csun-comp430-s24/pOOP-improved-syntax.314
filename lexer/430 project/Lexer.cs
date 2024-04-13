@@ -27,6 +27,7 @@ namespace Lang.Lexer
         SuperToken = 21,
         ClassToken = 39,
         ExtendsToken = 41,
+        StringToken = 42,
 
         MultToken = 22,
         DivToken = 23,
