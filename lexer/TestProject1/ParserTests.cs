@@ -42,6 +42,17 @@ public class ParserTests
     }
 
     [TestMethod]
+    public void Parser_ShouldParseBreakStmt()
+    {
+        string source = "break;";
+
+        Parser.VarDecStmt stmt = (Parser.VarDecStmt)code.stmts[0];
+
+        Assert.IsNotNull(stmt);
+        Assert.IsTrue(stmt is Parser.BreakStmt);
+    }
+
+    [TestMethod]
     public void Parser_ShouldParseReturnStmt()
     {
         string source = "return x;";
@@ -52,7 +63,6 @@ public class ParserTests
         Parser parser = new Parser(tokens);
         var ast = parser.ParseProgram(0);
         Parser.Code code = (Parser.Code)ast.parseResult;
-
         Parser.ReturnStmt stmt = (Parser.ReturnStmt)code.stmts[0];
 
         Assert.IsNotNull(stmt);
