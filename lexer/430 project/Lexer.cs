@@ -252,11 +252,6 @@ namespace Lang.Lexer
                         lexemeLength = count;
                         return TokenType.IntToken;
                     }
-                case "string":
-                    {
-                        lexemeLength = count;
-                        return TokenType.StringToken;
-                    }
                 case "bool":
                     {
                         lexemeLength = count;

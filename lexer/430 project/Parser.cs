@@ -54,6 +54,10 @@ namespace Lang.Parser
             {
                 this.value = value;
             }
+            public override string ToString()
+            {
+                return $"IntegerExp({value})";
+            }
         }
 
         public class StringExp : Exp
@@ -173,6 +177,10 @@ namespace Lang.Parser
                 }
             }
 
+            public override string ToString()
+            {
+                return $"BinOpExp({left.ToString()} {op.ToString()} {right.ToString()})";
+            }
         }
         public class CommaExp : Exp
         {
@@ -327,12 +335,17 @@ namespace Lang.Parser
         public class VarDecStmt : Stmt
         {
             public Type varType;
-            public string varIdentifier;
+            public Identifier varIdentifier;
 
-            public VarDecStmt(Type varType, string varIdentifier)
+            public VarDecStmt(Type varType, Identifier varIdentifier)
             {
                 this.varType = varType;
                 this.varIdentifier = varIdentifier;
+            }
+
+            public override string ToString()
+            {
+                return $"VarDec({varType.ToString()}, {varIdentifier.ToString()})";
             }
         }
         public class AssignmentStmt : Stmt
@@ -349,12 +362,16 @@ namespace Lang.Parser
                 if (other is AssignmentStmt)
                 {
                     AssignmentStmt e = (AssignmentStmt)other;
-                    return e.left.Equals(left) && e.right.Equals(right);
+                    return e.left.Equals(left) && e.right.Equals(right.ToString());
                 }
                 else
                 {
                     return false;
                 }
+            }
+            public override string ToString()
+            {
+                return $"AssignmentStmt({left.ToString()}, {right})";
             }
         }
         public class WhileStmt : Stmt
@@ -593,14 +610,12 @@ namespace Lang.Parser
             ParseResult<Stmt> programStmt = ParseStmt(currentPosition);
             stmts.Add(programStmt.parseResult);
             currentPosition = programStmt.nextPosition;
-            currentToken = tokens[currentPosition];
 
             while (currentPosition < tokens.Count)
             {
                 programStmt = ParseStmt(currentPosition);
                 stmts.Add(programStmt.parseResult);
                 currentPosition = programStmt.nextPosition;
-                currentToken = tokens[currentPosition];
             }
 
             return new ParseResult<Program>(new Code(classDefs.ToArray(), stmts.ToArray()), currentPosition + 1);
@@ -636,7 +651,7 @@ namespace Lang.Parser
 
             if (canBeType(token))
             {
-                return new ParseResult<Stmt>(new VarDecStmt(tokenToDataType(token), tokens[startPosition + 1].Lexeme), startPosition + 3);
+                return new ParseResult<Stmt>(new VarDecStmt(tokenToDataType(token), new Identifier(tokens[startPosition + 1].Lexeme)), startPosition + 2);
             }
 
             throw new ParseException("Variable type expected");
@@ -707,7 +722,7 @@ namespace Lang.Parser
                     ParseResult<Stmt> varDec = ParseVarDecStmt(startPosition);
                     if (tokens[varDec.nextPosition].Type == TokenType.SemicolonToken)
                     {
-                        return varDec;
+                        return new ParseResult<Stmt>(varDec.parseResult, varDec.nextPosition + 1);
                     }
                     else
                         throw new ParseException("Missing Semicolon");
