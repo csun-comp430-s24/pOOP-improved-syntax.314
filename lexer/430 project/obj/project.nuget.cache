@@ -1,13 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "xtEWx4VLi1kERu40SAPGSN/Z6sInUQSDxLuzajlbGuneFwWRXei/aYSN+dU3f7idkXPjPkKSSH765/9Vml/o9Q==",
+  "dgSpecHash": "yJaeKgtRn2LKPJ0dhu45gTsaj9+2STrc4edt1kpjTBkpNJvBbOQ/wdcGp2PEsgCzEVfqHMj0s7J284BQirfy5g==",
   "success": true,
-  "projectFilePath": "C:\\Users\\jayms\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\jayms\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.28\\microsoft.netcore.app.ref.6.0.28.nupkg.sha512",
-    "C:\\Users\\jayms\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.28\\microsoft.windowsdesktop.app.ref.6.0.28.nupkg.sha512",
-    "C:\\Users\\jayms\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.28\\microsoft.aspnetcore.app.ref.6.0.28.nupkg.sha512",
-    "C:\\Users\\jayms\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.28\\microsoft.netcore.app.host.win-x64.6.0.28.nupkg.sha512"
-  ],
+  "projectFilePath": "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\430 project.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }

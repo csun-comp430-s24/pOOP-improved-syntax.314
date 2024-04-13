@@ -7,12 +7,15 @@
       "RelativeMoniker": "D:0:0:{62EAC64B-DCC9-45FF-B053-F35C4980BA09}|430 project\\430 project.csproj|solutionrelative:430 project\\parser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{62EAC64B-DCC9-45FF-B053-F35C4980BA09}|430 project\\430 project.csproj|c:\\users\\chris\\documents\\github\\poop-improved-syntax.314\\lexer\\430 project\\lexer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{62EAC64B-DCC9-45FF-B053-F35C4980BA09}|430 project\\430 project.csproj|solutionrelative:430 project\\lexer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\chris\\AppData\\Local\\SourceServer\\6f5dc8371f87a583ab35ec1a3a5b517d3f25508047cafc453246edec2f73f9d8\\lexer\\430 project\\Parser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{62EAC64B-DCC9-45FF-B053-F35C4980BA09}|430 project\\430 project.csproj|c:\\users\\chris\\documents\\github\\poop-improved-syntax.314\\lexer\\430 project\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{62EAC64B-DCC9-45FF-B053-F35C4980BA09}|430 project\\430 project.csproj|solutionrelative:430 project\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{62EAC64B-DCC9-45FF-B053-F35C4980BA09}|430 project\\430 project.csproj|c:\\users\\chris\\documents\\github\\poop-improved-syntax.314\\lexer\\430 project\\lexer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{62EAC64B-DCC9-45FF-B053-F35C4980BA09}|430 project\\430 project.csproj|solutionrelative:430 project\\lexer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,19 +25,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
-            },
-            {
-              "$type": "Bookmark",
               "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
             },
             {
               "$type": "Bookmark",
@@ -46,29 +41,41 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Parser.cs",
+              "DocumentMoniker": "C:\\Users\\chris\\AppData\\Local\\SourceServer\\6f5dc8371f87a583ab35ec1a3a5b517d3f25508047cafc453246edec2f73f9d8\\lexer\\430 project\\Parser.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\SourceServer\\6f5dc8371f87a583ab35ec1a3a5b517d3f25508047cafc453246edec2f73f9d8\\lexer\\430 project\\Parser.cs",
+              "ToolTip": "C:\\Users\\chris\\AppData\\Local\\SourceServer\\6f5dc8371f87a583ab35ec1a3a5b517d3f25508047cafc453246edec2f73f9d8\\lexer\\430 project\\Parser.cs",
+              "RelativeToolTip": "..\\..\\..\\..\\AppData\\Local\\SourceServer\\6f5dc8371f87a583ab35ec1a3a5b517d3f25508047cafc453246edec2f73f9d8\\lexer\\430 project\\Parser.cs",
+              "ViewState": "AQIAANgCAAAAAAAAAAAYwMMCAABVAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-13T04:15:26.395Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Parser.cs",
               "DocumentMoniker": "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\Parser.cs",
               "RelativeDocumentMoniker": "430 project\\Parser.cs",
               "ToolTip": "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\Parser.cs",
               "RelativeToolTip": "430 project\\Parser.cs",
-              "ViewState": "AQIAAD4CAAAAAAAAAAAhwFMCAAAAAAAA",
+              "ViewState": "AQIAAEQCAAAAAAAAAAAYwFYCAAA5AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-04-12T03:29:14.182Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "Lexer.cs",
               "DocumentMoniker": "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\Lexer.cs",
               "RelativeDocumentMoniker": "430 project\\Lexer.cs",
               "ToolTip": "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\Lexer.cs",
               "RelativeToolTip": "430 project\\Lexer.cs",
-              "ViewState": "AQIAANsBAAAAAAAAAAAkwAAAAAAAAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABgAAAAPAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-12T03:29:10.455Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-12T03:29:10.455Z"
             },
             {
               "$type": "Document",
@@ -78,7 +85,7 @@
               "RelativeDocumentMoniker": "430 project\\Program.cs",
               "ToolTip": "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\Program.cs",
               "RelativeToolTip": "430 project\\Program.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAASAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABYAAAAIAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-03-11T20:08:16.015Z",
               "EditorCaption": ""

@@ -591,7 +591,7 @@ namespace Lang.Parser
             }
         }
 
-        public ParseResult<Program> ParseProgram(int startPosition)
+        public ParseResult<Program> ParseProgram(int startPosition)//More Breakpoints!
         {
             List<ClassDef> classDefs = new List<ClassDef>();
             List<Stmt> stmts = new List<Stmt>();
@@ -610,9 +610,8 @@ namespace Lang.Parser
             ParseResult<Stmt> programStmt = ParseStmt(currentPosition);
             stmts.Add(programStmt.parseResult);
             currentPosition = programStmt.nextPosition;
-
             while (currentPosition < tokens.Count)
-            {
+            {               
                 programStmt = ParseStmt(currentPosition);
                 stmts.Add(programStmt.parseResult);
                 currentPosition = programStmt.nextPosition;
