@@ -13,7 +13,7 @@ class Program
 {
     static void Main()
     {
-        string source = "int x;\nx = 1 * 1;";
+        string source = "{int x;return;}";
         Tokenizer tokenizer = new Tokenizer(source);
         List<Token> tokens = tokenizer.GetAllTokens();
 
@@ -21,9 +21,7 @@ class Program
         var ast = parser.ParseProgram(0);
         Parser.Code code = (Parser.Code)ast.parseResult;
 
-        Parser.Stmt stmt = code.stmts[0];
-
-
-        
+        Parser.BlockStmt block = (Parser.BlockStmt)code.stmts[0];
+        Console.WriteLine(block.ToString());
     }
 }
