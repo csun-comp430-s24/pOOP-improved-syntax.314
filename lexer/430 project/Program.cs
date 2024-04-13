@@ -13,12 +13,14 @@ class Program
 {
     static void Main()
     {
-        Tokenizer tokenizer = new Tokenizer("string x = \"Hello\";");
+        Tokenizer tokenizer = new Tokenizer("int x = 7;");
         List<Token> allTokens = tokenizer.GetAllTokens();
-
         foreach (Token token in allTokens)
         {
             Console.WriteLine($"{token.Type}" + ((token.Lexeme != "") ? $" {token.Lexeme}" : ""));
         }
+        Parser parser = new Parser(allTokens);
+
+
     }
 }
