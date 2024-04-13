@@ -574,7 +574,7 @@ namespace Lang.Parser
             }
         }
 
-        public ParseResult<Program> ParseProgram(int startPosition)
+        public ParseResult<Program> ParseProgram(int startPosition)//More Breakpoints!
         {
             List<ClassDef> classDefs = new List<ClassDef>();
             List<Stmt> stmts = new List<Stmt>();
@@ -593,14 +593,12 @@ namespace Lang.Parser
             ParseResult<Stmt> programStmt = ParseStmt(currentPosition);
             stmts.Add(programStmt.parseResult);
             currentPosition = programStmt.nextPosition;
-            currentToken = tokens[currentPosition];
-
+            
             while (currentPosition < tokens.Count)
-            {
+            {               
                 programStmt = ParseStmt(currentPosition);
                 stmts.Add(programStmt.parseResult);
                 currentPosition = programStmt.nextPosition;
-                currentToken = tokens[currentPosition];
             }
 
             return new ParseResult<Program>(new Code(classDefs.ToArray(), stmts.ToArray()), currentPosition + 1);
@@ -636,7 +634,7 @@ namespace Lang.Parser
 
             if (canBeType(token))
             {
-                return new ParseResult<Stmt>(new VarDecStmt(tokenToDataType(token), tokens[startPosition + 1].Lexeme), startPosition + 3);
+                return new ParseResult<Stmt>(new VarDecStmt(tokenToDataType(token), tokens[startPosition + 1].Lexeme), startPosition + 2);
             }
 
             throw new ParseException("Variable type expected");
@@ -707,7 +705,7 @@ namespace Lang.Parser
                     ParseResult<Stmt> varDec = ParseVarDecStmt(startPosition);
                     if (tokens[varDec.nextPosition].Type == TokenType.SemicolonToken)
                     {
-                        return varDec;
+                        return new ParseResult<Stmt>(varDec.parseResult, varDec.nextPosition + 1);//now we pray
                     }
                     else
                         throw new ParseException("Missing Semicolon");
