@@ -26,9 +26,7 @@ public class ParserTests
 
     public void Parser_ShouldParseExpressonThis()
     {
-        string source = "this;";
-
-
+        string source = "x = this;";
 
         Tokenizer tokenizer = new Tokenizer(source);
         List<Token> tokens = tokenizer.GetAllTokens();
@@ -38,8 +36,8 @@ public class ParserTests
         Parser.Code code = (Parser.Code)ast.parseResult;
 
 
-        Parser.ExpressionStmt exprStmt = (Parser.ExpressionStmt)code.stmts[0];
-        Parser.ThisExp thisExpr = (Parser.ThisExp)exprStmt.expression;
+        Parser.AssignmentStmt exprStmt = (Parser.AssignmentStmt)code.stmts[0];
+        Parser.ThisExp thisExpr = (Parser.ThisExp)exprStmt.right;
 
         Assert.IsNotNull(thisExpr, "The expression should not be null.");
         Assert.IsTrue(thisExpr is Parser.ThisExp, "The parsed expression should be an instance of ThisExp.");
@@ -47,8 +45,16 @@ public class ParserTests
     }
 
     public void Parser_ShouldParseVarDecStmt()
-        {
+    {
         string source = "bool x;";
+
+        Tokenizer tokenizer = new Tokenizer(source);
+        List<Token> tokens = tokenizer.GetAllTokens();
+
+        Parser parser = new Parser(tokens);
+        var ast = parser.ParseProgram(0);
+        Parser.Code code = (Parser.Code)ast.parseResult;
+
         Parser.VarDecStmt stmt = (Parser.VarDecStmt)code.stmts[0];
 
         Assert.IsNotNull(stmt);
@@ -62,7 +68,14 @@ public class ParserTests
     {
         string source = "break;";
 
-        Parser.VarDecStmt stmt = (Parser.VarDecStmt)code.stmts[0];
+        Tokenizer tokenizer = new Tokenizer(source);
+        List<Token> tokens = tokenizer.GetAllTokens();
+
+        Parser parser = new Parser(tokens);
+        var ast = parser.ParseProgram(0);
+        Parser.Code code = (Parser.Code)ast.parseResult;
+
+        Parser.BreakStmt stmt = (Parser.BreakStmt)code.stmts[0];
 
         Assert.IsNotNull(stmt);
         Assert.IsTrue(stmt is Parser.BreakStmt);
