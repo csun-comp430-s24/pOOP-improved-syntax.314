@@ -54,6 +54,16 @@ namespace Lang.Parser
             {
                 this.value = value;
             }
+            public override bool Equals(object? other)
+            {
+                if (other == null || !(other is IntegerExp))
+                {
+                    return false;
+                }
+
+                IntegerExp e = (IntegerExp)other;
+                return e.value == value;
+            }
             public override string ToString()
             {
                 return $"IntegerExp({value})";
@@ -90,7 +100,7 @@ namespace Lang.Parser
                 this.center = Identifier;
                 this.right = rightExp;
             }
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is NewExp)
                 {
@@ -115,7 +125,7 @@ namespace Lang.Parser
                 this.Parameters = Parameters;
             }
             
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is MethodCall)
                 {
@@ -135,7 +145,7 @@ namespace Lang.Parser
             {
                 this.value = value;
             }
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is Identifier)
                 {
@@ -147,7 +157,7 @@ namespace Lang.Parser
                     return false;
                 }
             }
-            public String ToString()
+            public override string ToString()
             {
                 return "IdentifierExp(" + value + ")";
             }
@@ -164,7 +174,7 @@ namespace Lang.Parser
                 this.op = op;
                 this.right = right;
             }
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is BinopExp)
                 {
@@ -191,7 +201,7 @@ namespace Lang.Parser
                 this.left = left;
                 this.right = right;
             }
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is CommaExp)
                 {
@@ -206,11 +216,11 @@ namespace Lang.Parser
         }
 
         public class PeriodOp : Op {   
-           public Boolean Equals(object other)
+           public override bool Equals(object? other)
             {
                 return other is PeriodOp;
             }
-            public String ToString()
+            public override String ToString()
             {
                 return "PeriodOp()";
             } 
@@ -219,44 +229,44 @@ namespace Lang.Parser
 
         public class PlusOp : Op
         {
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 return other is PlusOp;
             }
-            public String ToString()
+            public override string ToString()
             {
                 return "PlusOp()";
             }
         }
         public class MinusOp : Op
         {
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 return other is MinusOp;
             }
-            public String ToString()
+            public override string ToString()
             {
-                return "MinusOp()";
+                return "PlusOp()";
             }
         }
         public class MultOp : Op
         {
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 return other is MultOp;
             }
-            public String ToString()
+            public override string ToString()
             {
                 return "MultOp()";
             }
         }
         public class DivOp : Op
         {
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 return other is DivOp;
             }
-            public String ToString()
+            public override string ToString()
             {
                 return "DivOp()";
             }
@@ -264,11 +274,11 @@ namespace Lang.Parser
 
         public class IntType : Type
         {
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 return other is IntType;
             }
-            public String ToString()
+            public override string ToString()
             {
                 return "IntType()";
             }
@@ -276,11 +286,11 @@ namespace Lang.Parser
 
         public class BooleanType : Type
         {
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 return other is BooleanType;
             }
-            public String ToString()
+            public override string ToString()
             {
                 return "BooleanType()";
             }
@@ -288,11 +298,11 @@ namespace Lang.Parser
         
         public class VoidType : Type
         {
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 return other is VoidType;
             }
-            public String ToString()
+            public override string ToString()
             {
                 return "VoidType()";
             }
@@ -305,6 +315,11 @@ namespace Lang.Parser
             public CLassNameType(string className)
             {
                 this.className = className;
+            }
+
+            public override string ToString()
+            {
+                return $"ClassType({className})";
             }
         }
 
@@ -357,7 +372,7 @@ namespace Lang.Parser
                 this.left = left;
                 this.right = right;
             }
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is AssignmentStmt)
                 {
@@ -384,7 +399,7 @@ namespace Lang.Parser
                 this.body = body;
             }
             
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is WhileStmt)
                 {
@@ -397,7 +412,18 @@ namespace Lang.Parser
                 }
             }
         }
-        public class BreakStmt : Stmt { }
+        public class BreakStmt : Stmt
+        {
+            public override bool Equals(object? other)
+            {
+                return other is BreakStmt;
+            }
+            public override string ToString()
+            {
+                return "BreakStmt()";
+            }
+        }
+
         public class ReturnStmt : Stmt
         {
             public Exp? left;
@@ -407,7 +433,7 @@ namespace Lang.Parser
             {
                 this.left = left;
             }
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is ReturnStmt)
                 {
@@ -418,6 +444,11 @@ namespace Lang.Parser
                 {
                     return false;
                 }
+            }
+
+            public override string ToString()
+            {
+                return (left == null) ? "ReturnStmt()" : $"ReturnStmt({left.ToString()})";
             }
         }
         public class IfStmt : Stmt
@@ -438,7 +469,7 @@ namespace Lang.Parser
                 this.ifBody = ifBody;
             }
            
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is IfStmt)
                 {
@@ -458,7 +489,7 @@ namespace Lang.Parser
             {
                 this.Block = Block;
             }
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is BlockStmt)
                 {
@@ -496,7 +527,7 @@ namespace Lang.Parser
                 this.parameters = parameters;
                 this.methodBody = methodBody;
             }
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is Method)
                 {
@@ -533,7 +564,7 @@ namespace Lang.Parser
                 this.constructorBody = constructorBody;
             }
 
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is Con)
                 {
@@ -564,7 +595,7 @@ namespace Lang.Parser
                 this.classMethods = classMethods;
             }
 
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is Class)
                 {
@@ -587,7 +618,7 @@ namespace Lang.Parser
                 this.classDefs = classDefs;
                 this.stmts = stmts;
             }
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is Code)
                 {

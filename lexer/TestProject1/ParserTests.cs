@@ -5,7 +5,7 @@ using Lang.Parser;
 public class ParserTests
 {
     [TestMethod]
-    public void Parser_ShouldParseAssignmentAndBinOp()
+    public void Parser_ShouldParseAssignment()
     {
         string source = "x = 1 * 1;";
         Tokenizer tokenizer = new Tokenizer(source);
@@ -23,7 +23,48 @@ public class ParserTests
     }
 
     [TestMethod]
+    public void Parser_ShouldParseBinOp()
+    {
+        // Setup test source code
+        string source = "x = 1 * 2 + 3 / 4;";
 
+        // Pass source to Lexer to get a list of tokens
+        Tokenizer tokenizer = new Tokenizer(source);
+        List<Token> tokens = tokenizer.GetAllTokens();
+
+        // Pass tokens to Parser
+        Parser parser = new Parser(tokens);
+        var ast = parser.ParseProgram(0);
+
+        // Extract generated AST (containing a single statement)
+        Parser.Code code = (Parser.Code)ast.parseResult;
+        Parser.AssignmentStmt stmt = (Parser.AssignmentStmt)code.stmts[0];
+
+        // Check its assigning a BinopExp to Identifier x
+        // (Can't write expressions on their own, intentional grammar design?)
+        Assert.IsNotNull(stmt);
+        Assert.IsTrue(stmt.left.Equals(new Parser.Identifier("x")));
+
+        // Assert the Exp used in AssignmentStmt is a BinopExp
+        Assert.IsTrue(stmt.right is Parser.BinopExp);
+
+        // Cast Exp used in AssignmentStmt to BinopExp
+        // Assert that both sides of that BinopExp are also BinopExp's
+        Parser.BinopExp exp = (Parser.BinopExp)stmt.right;
+        Assert.IsTrue(exp.left is Parser.BinopExp);
+        Assert.IsTrue(exp.right is Parser.BinopExp);
+
+        // Assert the subexpressions are the expected subexpressions
+        Assert.IsTrue(((Parser.BinopExp)exp.left).left.Equals(new Parser.IntegerExp(1)));
+        Assert.IsTrue(((Parser.BinopExp)exp.left).op.Equals(new Parser.MultOp()));
+        Assert.IsTrue(((Parser.BinopExp)exp.left).right.Equals(new Parser.IntegerExp(2)));
+
+        Assert.IsTrue(((Parser.BinopExp)exp.right).left.Equals(new Parser.IntegerExp(3)));
+        Assert.IsTrue(((Parser.BinopExp)exp.right).op.Equals(new Parser.DivOp()));
+        Assert.IsTrue(((Parser.BinopExp)exp.right).right.Equals(new Parser.IntegerExp(4)));
+    }
+
+    [TestMethod]
     public void Parser_ShouldParseExpressonThis()
     {
         string source = "x = this;";
@@ -41,7 +82,6 @@ public class ParserTests
 
         Assert.IsNotNull(thisExpr, "The expression should not be null.");
         Assert.IsTrue(thisExpr is Parser.ThisExp, "The parsed expression should be an instance of ThisExp.");
-
     }
 
     public void Parser_ShouldParseVarDecStmt()
