@@ -137,6 +137,23 @@ namespace Lang.Parser
                     return false;
                 }
             }
+
+            public override string ToString()
+            {
+                string paramString = "";
+
+                if (Parameters.Length > 0)
+                {
+                    paramString += $"{Parameters[0].ToString()}";
+                }
+                
+                for (int i = 1; i < Parameters.Length; i++)
+                {
+                    paramString += $", {Parameters[i].ToString()}";
+                }
+
+                return $"MethodCall({Identifier.ToString()}, [{paramString}])";
+            }
         }
         public class Identifier : Exp
         {
@@ -1133,19 +1150,24 @@ namespace Lang.Parser
                     ParseResult<Op> op = ParseOp(left.nextPosition);
                     ParseResult<Exp> right = ParseCallExp(op.nextPosition);
                     nextPosition = right.nextPosition;
+
+                    if (nextPosition >= tokens.Count)
+                    {
+                        break;
+                    }
+
                     token = tokens[nextPosition];
                     CallExps.Add(right.parseResult);
                     Ops.Add(op.parseResult);
                 }
-                
-               
             }
-            if (Ops.Count > 0){
+            if (Ops.Count > 0)
+            {
                 BinopExp finalExp = new BinopExp(left.parseResult, Ops[0], CallExps[0]);
                 for (int i = 1; i < Ops.Count; i++)
-                    {
-                        finalExp = new BinopExp(finalExp, Ops[i], CallExps[i]);
-                    }
+                {
+                    finalExp = new BinopExp(finalExp, Ops[i], CallExps[i]);
+                }
                 return new ParseResult<Exp>(finalExp, nextPosition);
             }
                     
@@ -1163,9 +1185,10 @@ namespace Lang.Parser
                 while (token.Type == TokenType.PeriodToken)
                 {
                     ++nextPosition;
-                    ParseResult<Exp> right = ParsePrimaryExp(nextPosition);
+                    ParseResult<Exp> right = ParseMethodName(nextPosition);
                     nextPosition = right.nextPosition;
                     token = tokens[nextPosition];
+
                     if (token.Type == TokenType.OpenParenthesisToken)
                     {
                         ParseResult<Exp[]> ParameterExp = ParseCommaExp(nextPosition + 1); 
@@ -1173,25 +1196,39 @@ namespace Lang.Parser
                         {
                             MethodCallsExps.Add(new MethodCall(right.parseResult, ParameterExp.parseResult.ToArray()));
                             nextPosition = ParameterExp.nextPosition + 1;
+                            token = tokens[nextPosition];
                         }    
                     }
                     else
                     {
                         MethodCallsExps.Add(right.parseResult);
-                        break;
+                        nextPosition = right.nextPosition;
+                        token = tokens[nextPosition];
                     }
                 }
             }
             if (MethodCallsExps.Count > 0){
                 BinopExp finalExp = new BinopExp(left.parseResult, new PeriodOp(), MethodCallsExps[0]);
                 for (int i = 1; i < MethodCallsExps.Count; i++)
-                    {
-                        finalExp = new BinopExp(finalExp, new PeriodOp(), MethodCallsExps[i]);
-                    }
+                {
+                    finalExp = new BinopExp(finalExp, new PeriodOp(), MethodCallsExps[i]);
+                }
                 return new ParseResult<Exp>(finalExp, nextPosition);
             }
                     
             return new ParseResult<Exp>(left.parseResult, left.nextPosition); 
+        }
+
+        public ParseResult<Exp> ParseMethodName(int startPosition)
+        {
+            Token targetToken = tokens[startPosition];
+
+            if (targetToken.Type != TokenType.Identifier)
+            {
+                throw new ParseException("Method Name Expected");
+            }
+
+            return new ParseResult<Exp>(new Identifier(targetToken.Lexeme), startPosition + 1);
         }
 
         public ParseResult<Exp[]> ParseCommaExp(int startPosition)

@@ -13,7 +13,8 @@ class Program
 {
     static void Main()
     {
-        string source = "myVar = myClass.localVar;";
+        string source = "myVar = myClass.localFunc(param1, param2).field;";
+        source = "x = (1 + 2) / 3;";
         Tokenizer tokenizer = new Tokenizer(source);
         List<Token> tokens = tokenizer.GetAllTokens();
 
