@@ -906,7 +906,19 @@ namespace Lang.Parser
                     }
                     else
                         throw new ParseException("Missing Open Parenthesis");
-                
+                case TokenType.IntegerLiteral:
+                case TokenType.OpenParenthesisToken:
+                case TokenType.ThisToken:
+                case TokenType.TrueToken:
+                case TokenType.FalseToken:
+                case TokenType.PrintlnToken:
+                case TokenType.NewToken:
+                    ParseResult<Exp> stmtExp = ParseExp(startPosition);
+                    if (tokens[stmtExp.nextPosition].Type == TokenType.SemicolonToken)
+                        return new ParseResult<Stmt>(new ExpStmt(stmtExp.parseResult), stmtExp.nextPosition + 1);
+                    else
+                        throw new ParseException("Missing Semicolon");
+
                 default:
                     throw new ParseException("defaulted in ParseStmt");
 
