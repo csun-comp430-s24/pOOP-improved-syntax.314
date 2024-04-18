@@ -5,7 +5,7 @@ class Program
 {
     static void Main()
     {
-        string source = "myClass.localFunc(param1, 1 + 2 * 3, param2, false).field;";
+        string source = "class Test { int x; init() {x = 1;} method myFunc() int { return x; } } Test test;";
         //source = "x = 1 / 2 * 3;";
         Tokenizer tokenizer = new Tokenizer(source);
         List<Token> tokens = tokenizer.GetAllTokens();
@@ -14,7 +14,6 @@ class Program
         var ast = parser.ParseProgram(0);
         Parser.Code code = (Parser.Code)ast.parseResult;
 
-        Parser.ExpStmt block = (Parser.ExpStmt)code.stmts[0];
-        Console.WriteLine(block.ToString());
+        Console.WriteLine(code.ToString());
     }
 }

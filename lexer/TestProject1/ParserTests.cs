@@ -18,15 +18,14 @@ public class ParserTests
         Parser.AssignmentStmt stmt = (Parser.AssignmentStmt)code.stmts[0];
 
         Assert.IsNotNull(stmt);
-        Assert.IsTrue(stmt.left.Equals(new Parser.Identifier("x")));
-        Assert.IsTrue(stmt.right is Parser.BinopExp);
+        Assert.IsTrue(stmt.Equals(new Parser.AssignmentStmt(new Parser.Identifier("x"), new Parser.BinopExp(new Parser.IntegerExp(1), new Parser.MultOp(), new Parser.IntegerExp(1)))));
     }
 
     [TestMethod]
     public void Parser_ShouldParseBinOp()
     {
         // Setup test source code
-        string source = "x = 1 * 2 + 3 / 4;";
+        string source = "1 * 2 + 3 / 4;";
 
         // Pass source to Lexer to get a list of tokens
         Tokenizer tokenizer = new Tokenizer(source);
@@ -38,19 +37,18 @@ public class ParserTests
 
         // Extract generated AST (containing a single statement)
         Parser.Code code = (Parser.Code)ast.parseResult;
-        Parser.AssignmentStmt stmt = (Parser.AssignmentStmt)code.stmts[0];
+        Parser.ExpStmt stmt = (Parser.ExpStmt)code.stmts[0];
 
         // Check its assigning a BinopExp to Identifier x
         // (Can't write expressions on their own, intentional grammar design?)
         Assert.IsNotNull(stmt);
-        Assert.IsTrue(stmt.left.Equals(new Parser.Identifier("x")));
 
         // Assert the Exp used in AssignmentStmt is a BinopExp
-        Assert.IsTrue(stmt.right is Parser.BinopExp);
+        Assert.IsTrue(stmt.expression is Parser.BinopExp);
 
         // Cast Exp used in AssignmentStmt to BinopExp
         // Assert that both sides of that BinopExp are also BinopExp's
-        Parser.BinopExp exp = (Parser.BinopExp)stmt.right;
+        Parser.BinopExp exp = (Parser.BinopExp)stmt.expression;
         Assert.IsTrue(exp.left is Parser.BinopExp);
         Assert.IsTrue(exp.right is Parser.BinopExp);
 
@@ -67,7 +65,7 @@ public class ParserTests
     [TestMethod]
     public void Parser_ShouldParseExpressonThis()
     {
-        string source = "x = this;";
+        string source = "this;";
 
         Tokenizer tokenizer = new Tokenizer(source);
         List<Token> tokens = tokenizer.GetAllTokens();
@@ -77,13 +75,14 @@ public class ParserTests
         Parser.Code code = (Parser.Code)ast.parseResult;
 
 
-        Parser.AssignmentStmt exprStmt = (Parser.AssignmentStmt)code.stmts[0];
-        Parser.ThisExp thisExpr = (Parser.ThisExp)exprStmt.right;
+        Parser.ExpStmt exprStmt = (Parser.ExpStmt)code.stmts[0];
+        Parser.ThisExp thisExpr = (Parser.ThisExp)exprStmt.expression;
 
         Assert.IsNotNull(thisExpr, "The expression should not be null.");
         Assert.IsTrue(thisExpr is Parser.ThisExp, "The parsed expression should be an instance of ThisExp.");
     }
 
+    [TestMethod]
     public void Parser_ShouldParseVarDecStmt()
     {
         string source = "bool x;";
@@ -101,6 +100,7 @@ public class ParserTests
         Assert.IsTrue(stmt.varType is Parser.BooleanType);
         Assert.IsTrue(stmt.varIdentifier is Parser.Identifier);
         Assert.IsTrue(stmt.varIdentifier.value.Equals("x"));
+        Assert.IsTrue(stmt.Equals(new Parser.VarDecStmt(new Parser.BooleanType(), new Parser.Identifier("x"))));
     }
 
     [TestMethod]
@@ -159,5 +159,101 @@ public class ParserTests
         Assert.IsNotNull(blockStmts);
         Assert.IsTrue(blockStmts[0] is Parser.VarDecStmt);
         Assert.IsTrue(blockStmts[1] is Parser.ReturnStmt);
+    }
+
+    [TestMethod]
+    public void Parser_ShouldParseMultiMethodCall()
+    {
+        string source = "myClass.myFunc(param1, 1 + 2 / 3, param2, false).otherFunc().field;";
+
+        Tokenizer tokenizer = new Tokenizer(source);
+        List<Token> tokens = tokenizer.GetAllTokens();
+
+        Parser parser = new Parser(tokens);
+        var ast = parser.ParseProgram(0);
+        Parser.Code code = (Parser.Code)ast.parseResult;
+        Parser.ExpStmt stmt = (Parser.ExpStmt)code.stmts[0];
+
+        Assert.IsNotNull(stmt);
+
+        // Build up expected Parse Result
+        Parser.Exp[] fullParamList = new Parser.Exp[4];
+        fullParamList[0] = new Parser.Identifier("param1");
+        fullParamList[1] = new Parser.BinopExp(new Parser.IntegerExp(1), new Parser.PlusOp(), new Parser.BinopExp(new Parser.IntegerExp(2), new Parser.DivOp(), new Parser.IntegerExp(3)));
+        fullParamList[2] = new Parser.Identifier("param2");
+        fullParamList[3] = new Parser.FalseExp();
+
+        Parser.MethodCall paramMethodCall = new Parser.MethodCall(new Parser.Identifier("myFunc"), fullParamList);
+        Parser.MethodCall emptyMethodCall = new Parser.MethodCall(new Parser.Identifier("otherFunc"), Array.Empty<Parser.Exp>());
+
+        Parser.BinopExp finalExp = new Parser.BinopExp(new Parser.BinopExp(new Parser.BinopExp(new Parser.Identifier("myClass"), new Parser.PeriodOp(), paramMethodCall), new Parser.PeriodOp(), emptyMethodCall), new Parser.PeriodOp(), new Parser.Identifier("field"));
+
+        Parser.ExpStmt expectedStmt = new Parser.ExpStmt(finalExp);
+        Assert.IsTrue(stmt.Equals(expectedStmt));
+    }
+
+    [TestMethod]
+    public void Parser_ShouldParseWhileStmt()
+    {
+        string source = "while (true) {x = x + 1;}";
+
+        Tokenizer tokenizer = new Tokenizer(source);
+        List<Token> tokens = tokenizer.GetAllTokens();
+
+        Parser parser = new Parser(tokens);
+        var ast = parser.ParseProgram(0);
+        Parser.Code code = (Parser.Code)ast.parseResult;
+
+        string expectedParseResult = "WhileStmt(TrueExp(), (BlockStmt(\n\tAssignmentStmt(IdentifierExp(x), BinOpExp(IdentifierExp(x) PlusOp() IntegerExp(1)))\n)))\n";
+        Assert.IsTrue(code.ToString().Equals(expectedParseResult));
+    }
+
+    [TestMethod]
+    public void Parser_ShouldParseIfStmt()
+    {
+        string source = "if (true) {break;}";
+
+        Tokenizer tokenizer = new Tokenizer(source);
+        List<Token> tokens = tokenizer.GetAllTokens();
+
+        Parser parser = new Parser(tokens);
+        var ast = parser.ParseProgram(0);
+        Parser.Code code = (Parser.Code)ast.parseResult;
+
+        string expectedParseResult = "IfStmt(TrueExp(), (BlockStmt(\n\tBreakStmt()\n)))\n";
+        Assert.IsTrue(code.ToString().Equals(expectedParseResult));
+    }
+
+    [TestMethod]
+    public void Parser_ShouldParseIfElseStmt()
+    {
+        string source = "if (true) {break;} else {return;}";
+
+        Tokenizer tokenizer = new Tokenizer(source);
+        List<Token> tokens = tokenizer.GetAllTokens();
+
+        Parser parser = new Parser(tokens);
+        var ast = parser.ParseProgram(0);
+        Parser.Code code = (Parser.Code)ast.parseResult;
+
+        string expectedParseResult = "IfStmt(TrueExp(), (BlockStmt(\n\tBreakStmt()\n)), ElseStmt(BlockStmt(\n\tBreakStmt()\n)))\n";
+        Assert.IsTrue(code.ToString().Equals(expectedParseResult));
+    }
+
+    [TestMethod]
+    public void Parser_ShouldParseExampleProgram()
+    {
+        string source = "class Animal {\n  init() {}\n  method speak() Void { return println(0); }\n}\nclass Cat extends Animal {\n  init() { super(); }\n  method speak() Void { return println(1); }\n}\nclass Dog extends Animal {\n  init() { super(); }\n  method speak() Void { return println(2); }\n}\n\nAnimal cat;\nAnimal dog;\ncat = new Cat();\ndog = new Dog();\ncat.speak();\ndog.speak();";
+
+        Tokenizer tokenizer = new Tokenizer(source);
+        List<Token> tokens = tokenizer.GetAllTokens();
+
+        Parser parser = new Parser(tokens);
+        var ast = parser.ParseProgram(0);
+        Parser.Code code = (Parser.Code)ast.parseResult;
+
+        // Comparing ToString() as the output is very long
+        string expectedParseResult = "ClassDef(\nIdentifierExp(Animal) : \nConstructor(\n[]\nNo Super, \nBlockStmt(\n))\nMethodDef(\nIdentifierExp(speak), VoidType(), []\nBlockStmt(\n\tReturnStmt(PrintLn(IntegerExp(0)))\n))\n)\nClassDef(\nIdentifierExp(Cat) : IdentifierExp(Animal)\nConstructor(\n[]\nCalls Super, []\nBlockStmt(\n))\nMethodDef(\nIdentifierExp(speak), VoidType(), []\nBlockStmt(\n\tReturnStmt(PrintLn(IntegerExp(1)))\n))\n)\nClassDef(\nIdentifierExp(Dog) : IdentifierExp(Animal)\nConstructor(\n[]\nCalls Super, []\nBlockStmt(\n))\nMethodDef(\nIdentifierExp(speak), VoidType(), []\nBlockStmt(\n\tReturnStmt(PrintLn(IntegerExp(2)))\n))\n)\nVarDec(ClassType(Animal), IdentifierExp(cat))\nVarDec(ClassType(Animal), IdentifierExp(dog))\nAssignmentStmt(IdentifierExp(cat), NewExp(IdentifierExp(Cat)))\nAssignmentStmt(IdentifierExp(dog), NewExp(IdentifierExp(Dog)))\nExpStmt(BinOpExp(IdentifierExp(cat) PeriodOp() MethodCall(IdentifierExp(speak), [])))\nExpStmt(BinOpExp(IdentifierExp(dog) PeriodOp() MethodCall(IdentifierExp(speak), [])))\n";
+        Assert.IsTrue(code.ToString().Equals(expectedParseResult));
     }
 }
