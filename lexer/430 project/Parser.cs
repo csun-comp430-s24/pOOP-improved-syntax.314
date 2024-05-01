@@ -54,23 +54,58 @@ namespace Lang.Parser
             {
                 this.value = value;
             }
+            public override bool Equals(object? other)
+            {
+                if (other == null || !(other is IntegerExp))
+                {
+                    return false;
+                }
+
+                IntegerExp e = (IntegerExp)other;
+                return e.value == value;
+            }
             public override string ToString()
             {
                 return $"IntegerExp({value})";
             }
         }
 
-        public class StringExp : Exp
+        public class TrueExp : Exp
         {
-            public string value;
-            public StringExp(string value)
+            public override bool Equals(object? other)
             {
-                this.value = value;
+                return other is TrueExp;
+            }
+            public override string ToString()
+            {
+                return "TrueExp()";
             }
         }
-        public class TrueExp : Exp { }
-        public class FalseExp : Exp { }
-        public class ThisExp : Exp { }
+
+        public class FalseExp : Exp
+        {
+            public override bool Equals(object? other)
+            {
+                return other is FalseExp;
+            }
+            public override string ToString()
+            {
+                return "FalseExp()";
+            }
+        }
+
+        public class ThisExp : Exp
+        {
+            public override bool Equals(object? other)
+            {
+                return other is ThisExp;
+            }
+            public override string ToString()
+            {
+                return "ThisExp()";
+            }
+        }
+
         public class Println : Exp
         {
             public Exp exp;
@@ -78,32 +113,49 @@ namespace Lang.Parser
             {
                 this.exp = exp;
             }
-        }
-        public class NewExp : Exp
-        {
-            public Exp left;
-            public Exp center;
-            public Exp right;
-            public NewExp(Exp leftExp, Exp Identifier, Exp rightExp)
+            public override bool Equals(object? other)
             {
-                this.left = leftExp;
-                this.center = Identifier;
-                this.right = rightExp;
-            }
-            public Boolean Equals(object other)
-            {
-                if (other is NewExp)
+                if (other is Println)
                 {
-                    NewExp e = (NewExp)other;
-                    return e.left.Equals(left) && e.center.Equals(center) && e.right.Equals(right);
+                    Println e = (Println)other;
+                    return e.exp.Equals(exp);
                 }
                 else
                 {
                     return false;
                 }
             }
-
+            public override string ToString()
+            {
+                return $"PrintLn({exp.ToString()})";
+            }
         }
+
+        public class NewExp : Exp
+        {
+            public Identifier className;
+            public NewExp(Identifier className)
+            {
+                this.className = className;
+            }
+            public override bool Equals(object? other)
+            {
+                if (other is NewExp)
+                {
+                    NewExp e = (NewExp)other;
+                    return e.className.Equals(className);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            public override string ToString()
+            {
+                return $"NewExp({className.ToString()})";
+            }
+        }
+
         public class MethodCall : Exp
         {
             public Exp Identifier;
@@ -115,19 +167,51 @@ namespace Lang.Parser
                 this.Parameters = Parameters;
             }
             
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is MethodCall)
                 {
                     MethodCall e = (MethodCall)other;
-                    return e.Identifier.Equals(Identifier) && e.Parameters.Equals(Parameters);
+
+                    if (e.Parameters.Length != Parameters.Length)
+                    {
+                        return false;
+                    }
+
+                    for (int i = 0; i < Parameters.Length; i++)
+                    {
+                        if (!e.Parameters[i].Equals(Parameters[i]))
+                        {
+                            return false;
+                        }
+                    }
+
+                    return e.Identifier.Equals(Identifier);
                 }
                 else
                 {
                     return false;
                 }
             }
+
+            public override string ToString()
+            {
+                string paramString = "";
+
+                if (Parameters.Length > 0)
+                {
+                    paramString += $"{Parameters[0].ToString()}";
+                }
+                
+                for (int i = 1; i < Parameters.Length; i++)
+                {
+                    paramString += $", {Parameters[i].ToString()}";
+                }
+
+                return $"MethodCall({Identifier.ToString()}, [{paramString}])";
+            }
         }
+
         public class Identifier : Exp
         {
             public string value;
@@ -135,7 +219,7 @@ namespace Lang.Parser
             {
                 this.value = value;
             }
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is Identifier)
                 {
@@ -147,11 +231,12 @@ namespace Lang.Parser
                     return false;
                 }
             }
-            public String ToString()
+            public override string ToString()
             {
-                return "IdentifierExp(" + value + ")";
+                return $"IdentifierExp({value})";
             }
         }
+
         public class BinopExp : Exp
         {
             public Exp left;
@@ -164,7 +249,7 @@ namespace Lang.Parser
                 this.op = op;
                 this.right = right;
             }
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is BinopExp)
                 {
@@ -182,35 +267,13 @@ namespace Lang.Parser
                 return $"BinOpExp({left.ToString()} {op.ToString()} {right.ToString()})";
             }
         }
-        public class CommaExp : Exp
-        {
-            public Exp left;
-            public Exp right;
-            public CommaExp(Exp left, Exp right)
-            {
-                this.left = left;
-                this.right = right;
-            }
-            public Boolean Equals(object other)
-            {
-                if (other is CommaExp)
-                {
-                    CommaExp e = (CommaExp)other;
-                    return e.left.Equals(left) && e.right.Equals(right);
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
 
         public class PeriodOp : Op {   
-           public Boolean Equals(object other)
+           public override bool Equals(object? other)
             {
                 return other is PeriodOp;
             }
-            public String ToString()
+            public override String ToString()
             {
                 return "PeriodOp()";
             } 
@@ -219,44 +282,44 @@ namespace Lang.Parser
 
         public class PlusOp : Op
         {
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 return other is PlusOp;
             }
-            public String ToString()
+            public override string ToString()
             {
                 return "PlusOp()";
             }
         }
         public class MinusOp : Op
         {
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 return other is MinusOp;
             }
-            public String ToString()
+            public override string ToString()
             {
-                return "MinusOp()";
+                return "PlusOp()";
             }
         }
         public class MultOp : Op
         {
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 return other is MultOp;
             }
-            public String ToString()
+            public override string ToString()
             {
                 return "MultOp()";
             }
         }
         public class DivOp : Op
         {
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 return other is DivOp;
             }
-            public String ToString()
+            public override string ToString()
             {
                 return "DivOp()";
             }
@@ -264,11 +327,11 @@ namespace Lang.Parser
 
         public class IntType : Type
         {
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 return other is IntType;
             }
-            public String ToString()
+            public override string ToString()
             {
                 return "IntType()";
             }
@@ -276,11 +339,11 @@ namespace Lang.Parser
 
         public class BooleanType : Type
         {
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 return other is BooleanType;
             }
-            public String ToString()
+            public override string ToString()
             {
                 return "BooleanType()";
             }
@@ -288,11 +351,11 @@ namespace Lang.Parser
         
         public class VoidType : Type
         {
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 return other is VoidType;
             }
-            public String ToString()
+            public override string ToString()
             {
                 return "VoidType()";
             }
@@ -305,6 +368,11 @@ namespace Lang.Parser
             public CLassNameType(string className)
             {
                 this.className = className;
+            }
+
+            public override string ToString()
+            {
+                return $"ClassType({className})";
             }
         }
 
@@ -343,6 +411,19 @@ namespace Lang.Parser
                 this.varIdentifier = varIdentifier;
             }
 
+            public override bool Equals(object? other)
+            {
+                if (other is VarDecStmt)
+                {
+                    VarDecStmt e = (VarDecStmt)other;
+                    return e.varType.Equals(varType) && e.varIdentifier.Equals(varIdentifier);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
             public override string ToString()
             {
                 return $"VarDec({varType.ToString()}, {varIdentifier.ToString()})";
@@ -350,19 +431,19 @@ namespace Lang.Parser
         }
         public class AssignmentStmt : Stmt
         {
-            public Identifier left;
-            public Exp right;
-            public AssignmentStmt(Identifier left, Exp right)
+            public Identifier variable;
+            public Exp assignedExp;
+            public AssignmentStmt(Identifier variable, Exp assignedExp)
             {
-                this.left = left;
-                this.right = right;
+                this.variable = variable;
+                this.assignedExp = assignedExp;
             }
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is AssignmentStmt)
                 {
                     AssignmentStmt e = (AssignmentStmt)other;
-                    return e.left.Equals(left) && e.right.Equals(right.ToString());
+                    return e.variable.Equals(variable) && e.assignedExp.Equals(assignedExp);
                 }
                 else
                 {
@@ -371,9 +452,36 @@ namespace Lang.Parser
             }
             public override string ToString()
             {
-                return $"AssignmentStmt({left.ToString()}, {right})";
+                return $"AssignmentStmt({variable.ToString()}, {assignedExp})";
             }
         }
+        public class ExpStmt : Stmt
+        {
+            public Exp expression;
+
+            public ExpStmt(Exp expression)
+            {
+                this.expression = expression;
+            }
+            public override bool Equals(object? other)
+            {
+                if (other is ExpStmt)
+                {
+                    ExpStmt e = (ExpStmt)other;
+                    return e.expression.Equals(expression);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            public override string ToString()
+            {
+                return $"ExpStmt({expression.ToString()})";
+            }
+        }
+
         public class WhileStmt : Stmt
         {
             public Exp Condition;
@@ -384,7 +492,7 @@ namespace Lang.Parser
                 this.body = body;
             }
             
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is WhileStmt)
                 {
@@ -396,28 +504,49 @@ namespace Lang.Parser
                     return false;
                 }
             }
+
+            public override string ToString()
+            {
+                return $"WhileStmt({Condition.ToString()}, ({body.ToString()}))";
+            }
         }
-        public class BreakStmt : Stmt { }
+        public class BreakStmt : Stmt
+        {
+            public override bool Equals(object? other)
+            {
+                return other is BreakStmt;
+            }
+            public override string ToString()
+            {
+                return "BreakStmt()";
+            }
+        }
+
         public class ReturnStmt : Stmt
         {
-            public Exp left;
+            public Exp? left;
             
 
-            public ReturnStmt(Exp left)
+            public ReturnStmt(Exp? left)
             {
                 this.left = left;
             }
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is ReturnStmt)
                 {
                     ReturnStmt e = (ReturnStmt)other;
-                    return e.left.Equals(left);
+                    return (left == null && e.left == null) || (e.left != null && e.left.Equals(left));
                 }
                 else
                 {
                     return false;
                 }
+            }
+
+            public override string ToString()
+            {
+                return (left == null) ? "ReturnStmt()" : $"ReturnStmt({left.ToString()})";
             }
         }
         public class IfStmt : Stmt
@@ -438,7 +567,7 @@ namespace Lang.Parser
                 this.ifBody = ifBody;
             }
            
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is IfStmt)
                 {
@@ -450,6 +579,18 @@ namespace Lang.Parser
                     return false;
                 }
             }
+
+            public override string ToString()
+            {
+                string ifString = $"IfStmt({Condition.ToString()}, ({ifBody.ToString()})";
+
+                if (elseBody != null)
+                {
+                    ifString += $", ElseStmt({ifBody.ToString()})";
+                }
+
+                return ifString + ")";
+            }
         }
         public class BlockStmt : Stmt
         {
@@ -458,7 +599,7 @@ namespace Lang.Parser
             {
                 this.Block = Block;
             }
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is BlockStmt)
                 {
@@ -469,6 +610,16 @@ namespace Lang.Parser
                 {
                     return false;
                 }
+            }
+
+            public override string ToString()
+            {
+                string result = "";
+                foreach (Stmt stmt in Block)
+                {
+                    result += $"\t{stmt.ToString()}\n";
+                }
+                return $"BlockStmt(\n{result})";
             }
         }
 
@@ -486,7 +637,7 @@ namespace Lang.Parser
                 this.parameters = parameters;
                 this.methodBody = methodBody;
             }
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is Method)
                 {
@@ -497,6 +648,23 @@ namespace Lang.Parser
                 {
                     return false;
                 }
+            }
+
+            public override string ToString()
+            {
+                string paramsString = "";
+
+                if (parameters?.Length > 0)
+                {
+                    paramsString += $"{parameters[0].ToString()}";
+                }
+
+                for (int i = 1; i < parameters?.Length; i++)
+                {
+                    paramsString += $", {parameters[i].ToString()}";
+                }
+
+                return $"MethodDef(\n{methodName.ToString()}, {returnType.ToString()}, [{paramsString}]\n{methodBody.ToString()})";
             }
         }
 
@@ -523,7 +691,7 @@ namespace Lang.Parser
                 this.constructorBody = constructorBody;
             }
 
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is Con)
                 {
@@ -534,6 +702,37 @@ namespace Lang.Parser
                 {
                     return false;
                 }
+            }
+
+            public override string ToString()
+            {
+                string paramsString = "";
+                string superParamsString = "";
+
+                if (parameters?.Length > 0)
+                {
+                    paramsString += $"{parameters[0].ToString()}";
+                }
+
+                for (int i = 1; i < parameters?.Length; i++)
+                {
+                    paramsString += $", {parameters[i].ToString()}";
+                }
+
+                if (callsSuper)
+                {
+                    if (superParameters?.Length > 0)
+                    {
+                        superParamsString += $"{superParameters[0].ToString()}";
+                    }
+
+                    for (int i = 1; i < superParameters?.Length; i++)
+                    {
+                        superParamsString += $", {superParameters[i].ToString()}";
+                    }
+                }
+
+                return $"Constructor(\n[{paramsString}]\n{((callsSuper) ? $"Calls Super, [{superParamsString}]" : "No Super, ")}\n{constructorBody.ToString()})";
             }
         }
 
@@ -554,7 +753,7 @@ namespace Lang.Parser
                 this.classMethods = classMethods;
             }
 
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is Class)
                 {
@@ -565,6 +764,23 @@ namespace Lang.Parser
                 {
                     return false;
                 }
+            }
+
+            public override string ToString()
+            {
+                string varDecString = "";
+                foreach (Stmt varDec in localVarDecs)
+                {
+                    varDecString += $"{varDec.ToString()}\n";
+                }
+
+                string methodsString = "";
+                foreach (MethodDef methodDef in classMethods)
+                {
+                    methodsString += $"{methodDef.ToString()}\n";
+                }
+
+                return $"ClassDef(\n{className.ToString()} : {extendingClassName?.ToString()}\n{varDecString}{constructor.ToString()}\n{methodsString})";
             }
         }
 
@@ -577,7 +793,7 @@ namespace Lang.Parser
                 this.classDefs = classDefs;
                 this.stmts = stmts;
             }
-            public Boolean Equals(object other)
+            public override bool Equals(object? other)
             {
                 if (other is Code)
                 {
@@ -588,6 +804,23 @@ namespace Lang.Parser
                 {
                     return false;
                 }
+            }
+
+            public override string ToString()
+            {
+                string programString = "";
+
+                foreach (ClassDef def in classDefs)
+                {
+                    programString += $"{def.ToString()}\n";
+                }
+
+                foreach (Stmt stmt in stmts)
+                {
+                    programString += $"{stmt.ToString()}\n";
+                }
+
+                return programString;
             }
         }
 
@@ -659,21 +892,26 @@ namespace Lang.Parser
         public ParseResult<Stmt[]> ParseCommaVarDec(int startPosition)
         {
             List<Stmt> varDecs = new List<Stmt>();
-            ParseResult<Stmt> startVarDec = ParseVarDecStmt(startPosition);
-            
-            varDecs.Add(startVarDec.parseResult);
+            int nextPosition = startPosition;
 
-            int nextPosition = startVarDec.nextPosition;
-            Token currentToken = tokens[nextPosition];
-
-            while (currentToken.Type == TokenType.CommaToken)
+            if (tokens[startPosition].Type != TokenType.CloseParenthesisToken)
             {
-                ParseResult<Stmt> nextVarDec = ParseVarDecStmt(nextPosition + 1);
-                varDecs.Add(nextVarDec.parseResult);
-                nextPosition = nextVarDec.nextPosition;
-                currentToken = tokens[nextPosition];
-            }
+                ParseResult<Stmt> startVarDec = ParseVarDecStmt(startPosition);
 
+                varDecs.Add(startVarDec.parseResult);
+
+                nextPosition = startVarDec.nextPosition;
+                Token currentToken = tokens[nextPosition];
+
+                while (currentToken.Type == TokenType.CommaToken)
+                {
+                    ParseResult<Stmt> nextVarDec = ParseVarDecStmt(nextPosition + 1);
+                    varDecs.Add(nextVarDec.parseResult);
+                    nextPosition = nextVarDec.nextPosition;
+                    currentToken = tokens[nextPosition];
+                }
+            }
+            
             return new ParseResult<Stmt[]>(varDecs.ToArray(), nextPosition);
         }
 
@@ -695,18 +933,20 @@ namespace Lang.Parser
         public ParseResult<Stmt> ParseReturnStmt(int startPosition)
         {
             Token token = tokens[startPosition];
-            switch (token.Type)
-            {
-                case TokenType.ReturnToken:
-                    if (tokens[startPosition + 1].Type != TokenType.SemicolonToken){
-                        ParseResult<Exp> ReturnExp = ParseExp(startPosition + 1);
-                        return new ParseResult<Stmt>(new ReturnStmt(ReturnExp.parseResult), startPosition + 2);
-                    }
-                    else
-                        throw new ParseException("Missing Semicolon");
-                default:
-                    throw new ParseException("defaulted in ParseReturnStmt");
+            if (token.Type == TokenType.ReturnToken)
+            { 
+                if (tokens[startPosition + 1].Type != TokenType.SemicolonToken)
+                {
+                    ParseResult<Exp> ReturnExp = ParseExp(startPosition + 1);
+                    return new ParseResult<Stmt>(new ReturnStmt(ReturnExp.parseResult), ReturnExp.nextPosition);
+                }
+                else
+                {
+                    return new ParseResult<Stmt>(new ReturnStmt(null), startPosition + 1);
+                }
             }
+
+            throw new ParseException("defaulted in ParseReturnStmt");
         }
 
 
@@ -729,17 +969,37 @@ namespace Lang.Parser
                     if (tokens[startPosition + 1].Type == TokenType.EqualsToken)
                     {
                         ParseResult<Exp> exp = ParseExp(startPosition + 2);
+
                         if (tokens[exp.nextPosition].Type == TokenType.SemicolonToken)
                             return new ParseResult<Stmt>(new AssignmentStmt(new Identifier(token.Lexeme), exp.parseResult), exp.nextPosition + 1);
                         else
                             throw new ParseException("Missing Semicolon");
                     }
+                    else if (tokens[startPosition + 1].Type == TokenType.Identifier)
+                    {
+                        // Current token is a custom class, parse as a vardec
+                        ParseResult<Stmt> customClassVarDec = ParseVarDecStmt(startPosition);
+                        if (tokens[customClassVarDec.nextPosition].Type == TokenType.SemicolonToken)
+                        {
+                            return new ParseResult<Stmt>(customClassVarDec.parseResult, customClassVarDec.nextPosition + 1);
+                        }
+                        else
+                            throw new ParseException("Missing Semicolon");
+                    }
                     else
-                        throw new ParseException("Assignment Operator expected");
+                    {
+                        // Try to parse as an expression
+                        ParseResult<Exp> exp = ParseExp(startPosition);
+                        if (tokens[exp.nextPosition].Type == TokenType.SemicolonToken)
+                            return new ParseResult<Stmt>(new ExpStmt(exp.parseResult), exp.nextPosition + 1);
+                        else
+                            throw new ParseException("Missing Semicolon");
+                    }
                 case TokenType.BreakToken:
                     return ParseBreakStmt(startPosition);
                 case TokenType.ReturnToken:
-                    return ParseReturnStmt(startPosition);
+                    ParseResult<Stmt> returnStmt = ParseReturnStmt(startPosition);
+                    return new ParseResult<Stmt>(returnStmt.parseResult, returnStmt.nextPosition + 1);
                 case TokenType.OpenBracketToken:
                     ParseResult<Stmt> block = ParseBlock(startPosition + 1);
                     return new ParseResult<Stmt>(block.parseResult, block.nextPosition + 1);
@@ -764,7 +1024,7 @@ namespace Lang.Parser
                         if (tokens[exp.nextPosition].Type == TokenType.CloseParenthesisToken)
                         {
                             ParseResult<Stmt> stmt = ParseStmt(exp.nextPosition + 1);
-                            if (tokens[stmt.nextPosition].Type == TokenType.ElseToken)
+                            if (stmt.nextPosition < tokens.Count && tokens[stmt.nextPosition].Type == TokenType.ElseToken)
                             {
                                 ParseResult<Stmt> elseStmt = ParseStmt(stmt.nextPosition + 1);
                                 return new ParseResult<Stmt>(new IfStmt(exp.parseResult, stmt.parseResult, elseStmt.parseResult), elseStmt.nextPosition);
@@ -776,7 +1036,19 @@ namespace Lang.Parser
                     }
                     else
                         throw new ParseException("Missing Open Parenthesis");
-                
+                case TokenType.IntegerLiteral:
+                case TokenType.OpenParenthesisToken:
+                case TokenType.ThisToken:
+                case TokenType.TrueToken:
+                case TokenType.FalseToken:
+                case TokenType.PrintlnToken:
+                case TokenType.NewToken:
+                    ParseResult<Exp> stmtExp = ParseExp(startPosition);
+                    if (tokens[stmtExp.nextPosition].Type == TokenType.SemicolonToken)
+                        return new ParseResult<Stmt>(new ExpStmt(stmtExp.parseResult), stmtExp.nextPosition + 1);
+                    else
+                        throw new ParseException("Missing Semicolon");
+
                 default:
                     throw new ParseException("defaulted in ParseStmt");
 
@@ -786,10 +1058,9 @@ namespace Lang.Parser
         public ParseResult<Stmt> ParseBlock(int startPosition)
         {
             List<Stmt> stmts = new List<Stmt>();
-            ParseResult<Stmt> stmt = ParseStmt(startPosition);
-            stmts.Add(stmt.parseResult);
-            int nextPosition = stmt.nextPosition;
+            int nextPosition = startPosition;
             Token token = tokens[nextPosition];
+            
             while (token.Type != TokenType.ClosedBracketToken)
             {
                 ParseResult<Stmt> nextStmt = ParseStmt(nextPosition);
@@ -797,7 +1068,8 @@ namespace Lang.Parser
                 nextPosition = nextStmt.nextPosition;
                 token = tokens[nextPosition];
             }
-            return new ParseResult<Stmt>(new BlockStmt(stmts.ToArray()), nextPosition + 1);
+
+            return new ParseResult<Stmt>(new BlockStmt(stmts.ToArray()), nextPosition);
         }
 
         public ParseResult<MethodDef> ParseMethodDef(int startposition)
@@ -818,7 +1090,7 @@ namespace Lang.Parser
 
             currentPosition++;
             currentToken = tokens[currentPosition];
-            
+
             // Must be followed with an Identifier
             if (currentToken.Type != TokenType.Identifier)
             {
@@ -838,6 +1110,7 @@ namespace Lang.Parser
             ParseResult<Stmt[]> parameterVarDecs = ParseCommaVarDec(currentPosition + 1);
             parameters = parameterVarDecs.parseResult;
             currentPosition = parameterVarDecs.nextPosition;
+            currentToken = tokens[currentPosition];
 
             if (currentToken.Type != TokenType.CloseParenthesisToken)
             {
@@ -893,6 +1166,7 @@ namespace Lang.Parser
             ParseResult<Stmt[]> parameterVarDecs = ParseCommaVarDec(currentPosition + 1);
             parameters = parameterVarDecs.parseResult;
             currentPosition = parameterVarDecs.nextPosition;
+            currentToken = tokens[currentPosition];
 
             if (currentToken.Type != TokenType.CloseParenthesisToken)
             {
@@ -924,6 +1198,7 @@ namespace Lang.Parser
                 ParseResult<Exp[]> superParameterExps = ParseCommaExp(currentPosition + 1);
                 superParameters = superParameterExps.parseResult;
                 currentPosition = superParameterExps.nextPosition;
+                currentToken = tokens[currentPosition];
 
                 if (currentToken.Type != TokenType.CloseParenthesisToken)
                 {
@@ -1022,11 +1297,19 @@ namespace Lang.Parser
             currentPosition = constructor.nextPosition;
             currentToken = tokens[currentPosition];
 
+            if (currentToken.Type != TokenType.ClosedBracketToken)
+            {
+                throw new ParseException("Missing Closing Curly Bracket for Constructor");
+            }
+
+            currentPosition++;
+            currentToken = tokens[currentPosition];
+
             while (currentToken.Type == TokenType.MethodToken)
             {
                 ParseResult<MethodDef> methodDef = ParseMethodDef(currentPosition);
                 methodDefs.Add(methodDef.parseResult);
-                currentPosition += methodDef.nextPosition;
+                currentPosition = methodDef.nextPosition;
                 currentToken = tokens[currentPosition];
             }
 
@@ -1035,7 +1318,7 @@ namespace Lang.Parser
 
             if (currentToken.Type != TokenType.ClosedBracketToken)
             {
-                throw new ParseException("Missing Closing Curly Bracket for Class Definition");
+                throw new ParseException($"Missing Closing Curly Bracket for Class Definition");
             }
 
             return new ParseResult<ClassDef>(new Class(className, extendedClassName, localVarDecs.ToArray(), constructor.parseResult, methodDefs.ToArray()), currentPosition + 1);
@@ -1052,7 +1335,7 @@ namespace Lang.Parser
                 Token token = tokens[nextPosition];
                 while (token.Type == TokenType.AddToken || token.Type == TokenType.SubToken)
                 {
-                    ParseResult<Op> op = ParseOp(left.nextPosition);
+                    ParseResult<Op> op = ParseOp(nextPosition);
                     ParseResult<Exp> right = ParseMultExp(op.nextPosition);
                     nextPosition = right.nextPosition;
                     token = tokens[nextPosition];
@@ -1086,22 +1369,27 @@ namespace Lang.Parser
                 Token token = tokens[nextPosition];
                 while (token.Type == TokenType.MultToken || token.Type == TokenType.DivToken)
                 {
-                    ParseResult<Op> op = ParseOp(left.nextPosition);
+                    ParseResult<Op> op = ParseOp(nextPosition);
                     ParseResult<Exp> right = ParseCallExp(op.nextPosition);
                     nextPosition = right.nextPosition;
+
+                    if (nextPosition >= tokens.Count)
+                    {
+                        break;
+                    }
+
                     token = tokens[nextPosition];
                     CallExps.Add(right.parseResult);
                     Ops.Add(op.parseResult);
                 }
-                
-               
             }
-            if (Ops.Count > 0){
+            if (Ops.Count > 0)
+            {
                 BinopExp finalExp = new BinopExp(left.parseResult, Ops[0], CallExps[0]);
                 for (int i = 1; i < Ops.Count; i++)
-                    {
-                        finalExp = new BinopExp(finalExp, Ops[i], CallExps[i]);
-                    }
+                {
+                    finalExp = new BinopExp(finalExp, Ops[i], CallExps[i]);
+                }
                 return new ParseResult<Exp>(finalExp, nextPosition);
             }
                     
@@ -1119,51 +1407,72 @@ namespace Lang.Parser
                 while (token.Type == TokenType.PeriodToken)
                 {
                     ++nextPosition;
-                    ParseResult<Exp> right = ParsePrimaryExp(nextPosition);
+                    ParseResult<Exp> right = ParseMethodName(nextPosition);
                     nextPosition = right.nextPosition;
                     token = tokens[nextPosition];
+
                     if (token.Type == TokenType.OpenParenthesisToken)
                     {
-                        ParseResult<Exp[]> ParameterExp = ParseCommaExp(nextPosition + 1); 
+                        ParseResult<Exp[]> ParameterExp = ParseCommaExp(nextPosition + 1);
                         if (tokens[ParameterExp.nextPosition].Type == TokenType.CloseParenthesisToken)
                         {
                             MethodCallsExps.Add(new MethodCall(right.parseResult, ParameterExp.parseResult.ToArray()));
                             nextPosition = ParameterExp.nextPosition + 1;
+                            token = tokens[nextPosition];
                         }    
                     }
                     else
                     {
                         MethodCallsExps.Add(right.parseResult);
-                        break;
+                        nextPosition = right.nextPosition;
+                        token = tokens[nextPosition];
                     }
                 }
             }
             if (MethodCallsExps.Count > 0){
                 BinopExp finalExp = new BinopExp(left.parseResult, new PeriodOp(), MethodCallsExps[0]);
                 for (int i = 1; i < MethodCallsExps.Count; i++)
-                    {
-                        finalExp = new BinopExp(finalExp, new PeriodOp(), MethodCallsExps[i]);
-                    }
+                {
+                    finalExp = new BinopExp(finalExp, new PeriodOp(), MethodCallsExps[i]);
+                }
                 return new ParseResult<Exp>(finalExp, nextPosition);
             }
                     
             return new ParseResult<Exp>(left.parseResult, left.nextPosition); 
         }
 
+        public ParseResult<Exp> ParseMethodName(int startPosition)
+        {
+            Token targetToken = tokens[startPosition];
+
+            if (targetToken.Type != TokenType.Identifier)
+            {
+                throw new ParseException("Method Name Expected");
+            }
+
+            return new ParseResult<Exp>(new Identifier(targetToken.Lexeme), startPosition + 1);
+        }
+
         public ParseResult<Exp[]> ParseCommaExp(int startPosition)
         {
             List<Exp> exps = new List<Exp>();
-            ParseResult<Exp> left = ParseExp(startPosition);
-            exps.Add(left.parseResult);
-            int nextPosition = left.nextPosition;
-            Token token = tokens[nextPosition];
-            while (token.Type == TokenType.CommaToken)
+            int nextPosition = startPosition;
+
+            if (tokens[startPosition].Type != TokenType.CloseParenthesisToken)
             {
-                ParseResult<Exp> right = ParseExp(nextPosition + 1);
-                exps.Add(right.parseResult);
-                nextPosition = right.nextPosition;
-                token = tokens[nextPosition];
+                ParseResult<Exp> left = ParseExp(startPosition);
+                exps.Add(left.parseResult);
+                nextPosition = left.nextPosition;
+                Token token = tokens[nextPosition];
+                while (token.Type == TokenType.CommaToken)
+                {
+                    ParseResult<Exp> right = ParseExp(nextPosition + 1);
+                    exps.Add(right.parseResult);
+                    nextPosition = right.nextPosition;
+                    token = tokens[nextPosition];
+                }
             }
+            
             return new ParseResult<Exp[]>(exps.ToArray(), nextPosition);
         }
         public ParseResult<Exp> ParsePrimaryExp(int startPosition){
@@ -1186,7 +1495,7 @@ namespace Lang.Parser
                         if (tokens[startPosition + 2].Type == TokenType.OpenParenthesisToken)
                         {
                             if (tokens[startPosition + 3].Type == TokenType.CloseParenthesisToken)
-                                return new ParseResult<Exp>(new NewExp(new Identifier(tokens[startPosition + 1].Lexeme), new Identifier(""), new Identifier("")), startPosition + 4);
+                                return new ParseResult<Exp>(new NewExp(new Identifier(tokens[startPosition + 1].Lexeme)), startPosition + 4);
                             else
                                 throw new ParseException("Missing Close Parenthesis");
                         }
