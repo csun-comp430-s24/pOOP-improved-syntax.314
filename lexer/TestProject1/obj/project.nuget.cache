@@ -1,6 +1,10 @@
 {
   "version": 2,
+<<<<<<< HEAD
   "dgSpecHash": "SrLYpcQuxNeuMuxzelsDQFYLYl22mLFZCBBE7DJTSfbocb+9IFa+d7cJ+qJDhYWYZqcRbYM0qUhlCx7F9/t4+A==",
+=======
+  "dgSpecHash": "RpaXcJrgyCRT2Q8mrItfxEWLjRva85WCJXgWS1zxDxe8E3lzH76rpA5s98F+K2q+9v4BfebY1k9fPHLEyoddFA==",
+>>>>>>> main
   "success": true,
   "projectFilePath": "C:\\Users\\twinx\\OneDrive\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\TestProject1\\TestProject1.csproj",
   "expectedPackageFiles": [

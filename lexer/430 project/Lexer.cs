@@ -10,7 +10,6 @@ namespace Lang.Lexer
         StringLiteral = 4,
         IntegerLiteral = 5,
         IntToken = 6,
-        StringToken = 39,
         BooleanToken = 7,
         VoidToken = 8,
         ThisToken = 9,
@@ -26,13 +25,15 @@ namespace Lang.Lexer
         MethodToken = 19,
         InitToken = 20,
         SuperToken = 21,
+        ClassToken = 39,
+        ExtendsToken = 41,
 
         MultToken = 22,
         DivToken = 23,
         AddToken = 24,
         SubToken = 25,
 
-        QuoteToken = 40,
+        PeriodToken = 40,
         OpenBracketToken = 26,
         ClosedBracketToken = 27,
         AndToken = 28,
@@ -194,11 +195,7 @@ namespace Lang.Lexer
             {
                 return new Token(TokenType.IntegerLiteral, integerLiteral.Item2, Line);
             }
-            Tuple<TokenType, String> stringLiteral = IsStringLiteral();
-            if (stringLiteral.Item1 != 0)
-            {
-                return new Token(TokenType.StringLiteral, stringLiteral.Item2, Line);
-            }
+
 
 
             //bad token
@@ -228,29 +225,7 @@ namespace Lang.Lexer
             return new Tuple<TokenType, string>(TokenType.Identifier, lexeme);
         }
 
-        Tuple<TokenType, String> IsStringLiteral()
-        {
-            if (PeekChar() != '\"')
-                return new Tuple<TokenType, string>(0, string.Empty);
-            string lexeme = GetChar().ToString();
-            int count = 1;
-            int line = Line;
-            while (PeekChar() != '\"')
-            {
-                lexeme = lexeme + GetChar();
-                count++;
-                if (line != Line)
-                {
-                    UngetString(count);
-                    return new Tuple<TokenType, string>(0, string.Empty);
-                }
-            }
-            lexeme += GetChar();
-
-            lexemeLength = count+1;
-            return new Tuple<TokenType, string>(TokenType.Identifier, lexeme);
-        }
-
+        
         TokenType IsKeyword()
         {
             if (!char.IsLetter(PeekChar())) return 0;
@@ -276,11 +251,6 @@ namespace Lang.Lexer
                     {
                         lexemeLength = count;
                         return TokenType.IntToken;
-                    }
-                case "string":
-                    {
-                        lexemeLength = count;
-                        return TokenType.StringToken;
                     }
                 case "bool":
                     {
@@ -367,6 +337,16 @@ namespace Lang.Lexer
                     {
                         lexemeLength = count;
                         return TokenType.WhileToken;
+                    }
+                case "class":
+                    {
+                        lexemeLength = count;
+                        return TokenType.ClassToken;
+                    }
+                case "extends":
+                    {
+                        lexemeLength = count;
+                        return TokenType.ExtendsToken;
                     }
             }
 
@@ -513,6 +493,12 @@ namespace Lang.Lexer
                         GetChar();
                         lexemeLength = 1;
                         return TokenType.CommaToken;
+                    }
+                case '.':
+                    {
+                        GetChar();
+                        lexemeLength = 1;
+                        return TokenType.PeriodToken;
                     }
 
                 case ')':
