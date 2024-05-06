@@ -1,19 +1,12 @@
 ﻿using Lang.Lexer;
 using Lang.Parser;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.ObjectiveC;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
-
 
 class Program
 {
     static void Main()
     {
-        string source = "{int x;return;}";
+        string source = "class Test { int x; init() {x = 1;} method myFunc() int { return x; } } Test test;";
+        //source = "x = 1 / 2 * 3;";
         Tokenizer tokenizer = new Tokenizer(source);
         List<Token> tokens = tokenizer.GetAllTokens();
 
@@ -21,7 +14,6 @@ class Program
         var ast = parser.ParseProgram(0);
         Parser.Code code = (Parser.Code)ast.parseResult;
 
-        Parser.BlockStmt block = (Parser.BlockStmt)code.stmts[0];
-        Console.WriteLine(block.ToString());
+        Console.WriteLine(code.ToString());
     }
 }
