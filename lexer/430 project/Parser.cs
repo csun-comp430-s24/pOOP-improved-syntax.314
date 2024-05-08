@@ -273,7 +273,7 @@ namespace Lang.Parser
             {
                 return other is PeriodOp;
             }
-            public override String ToString()
+            public override string ToString()
             {
                 return "PeriodOp()";
             } 
@@ -586,7 +586,7 @@ namespace Lang.Parser
 
                 if (elseBody != null)
                 {
-                    ifString += $", ElseStmt({ifBody.ToString()})";
+                    ifString += $", ElseStmt({elseBody.ToString()})";
                 }
 
                 return ifString + ")";
@@ -604,7 +604,21 @@ namespace Lang.Parser
                 if (other is BlockStmt)
                 {
                     BlockStmt e = (BlockStmt)other;
-                    return e.Block.Equals(Block);
+
+                    if (e.Block.Length != Block.Length)
+                    {
+                        return false;
+                    }
+
+                    for (int i = 0; i < Block.Length; i++)
+                    {
+                        if (!e.Block[i].Equals(Block[i]))
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
                 }
                 else
                 {
@@ -642,7 +656,21 @@ namespace Lang.Parser
                 if (other is Method)
                 {
                     Method e = (Method)other;
-                    return e.methodName.Equals(methodName) && e.returnType.Equals(returnType) && e.parameters.Equals(parameters) && e.methodBody.Equals(methodBody);
+
+                    if (e.parameters.Length != parameters.Length)
+                    {
+                        return false;
+                    }
+
+                    for (int i = 0; i < parameters.Length; i++)
+                    {
+                        if (!e.parameters[i].Equals(parameters[i]))
+                        {
+                            return false;
+                        }
+                    }
+
+                    return e.methodName.Equals(methodName) && e.returnType.Equals(returnType) && e.methodBody.Equals(methodBody);
                 }
                 else
                 {
@@ -696,7 +724,36 @@ namespace Lang.Parser
                 if (other is Con)
                 {
                     Con e = (Con)other;
-                    return e.parameters.Equals(parameters) && e.constructorBody.Equals(constructorBody) && e.callsSuper.Equals(callsSuper) && (callsSuper && ((superParameters == null && e.superParameters == null) || e.superParameters != null && e.superParameters.Equals(superParameters)));
+                    if (e.parameters.Length != parameters.Length)
+                    {
+                        return false;
+                    }
+
+                    for (int i = 0; i < parameters.Length; i++)
+                    {
+                        if (!e.parameters[i].Equals(parameters[i]))
+                        {
+                            return false;
+                        }
+                    }
+
+                    if (callsSuper)
+                    {
+                        if (!e.callsSuper || e.parameters.Length != parameters.Length)
+                        {
+                            return false;
+                        }
+
+                        for (int i = 0; i < parameters.Length; i++)
+                        {
+                            if (!e.parameters[i].Equals(parameters[i]))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+
+                    return e.constructorBody.Equals(constructorBody);
                 }
                 else
                 {
@@ -758,7 +815,34 @@ namespace Lang.Parser
                 if (other is Class)
                 {
                     Class e = (Class)other;
-                    return e.className.Equals(className) && ((extendingClassName == null && e.extendingClassName == null) || (e.extendingClassName != null && e.extendingClassName.Equals(extendingClassName))) && e.localVarDecs.Equals(localVarDecs) && e.constructor.Equals(constructor) && e.classMethods.Equals(classMethods);
+
+                    if (e.localVarDecs.Length != localVarDecs.Length)
+                    {
+                        return false;
+                    }
+
+                    for (int i = 0; i < localVarDecs.Length; i++)
+                    {
+                        if (!e.localVarDecs[i].Equals(localVarDecs[i]))
+                        {
+                            return false;
+                        }
+                    }
+
+                    if (e.classMethods.Length != classMethods.Length)
+                    {
+                        return false;
+                    }
+
+                    for (int i = 0; i < classMethods.Length; i++)
+                    {
+                        if (!e.classMethods[i].Equals(classMethods[i]))
+                        {
+                            return false;
+                        }
+                    }
+
+                    return e.className.Equals(className) && ((extendingClassName == null && e.extendingClassName == null) || (e.extendingClassName != null && e.extendingClassName.Equals(extendingClassName))) && e.constructor.Equals(constructor);
                 }
                 else
                 {
@@ -798,7 +882,34 @@ namespace Lang.Parser
                 if (other is Code)
                 {
                     Code e = (Code)other;
-                    return e.classDefs.Equals(classDefs) && e.stmts.Equals(stmts);
+
+                    if (e.classDefs.Length != classDefs.Length)
+                    {
+                        return false;
+                    }
+
+                    for (int i = 0; i < classDefs.Length; i++)
+                    {
+                        if (!e.classDefs[i].Equals(classDefs[i]))
+                        {
+                            return false;
+                        }
+                    }
+
+                    if (e.stmts.Length != stmts.Length)
+                    {
+                        return false;
+                    }
+
+                    for (int i = 0; i < stmts.Length; i++)
+                    {
+                        if (!e.stmts[i].Equals(stmts[i]))
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
                 }
                 else
                 {
@@ -838,6 +949,11 @@ namespace Lang.Parser
                 classDefs.Add(classDef.parseResult);
                 currentPosition = classDef.nextPosition;
                 currentToken = tokens[currentPosition];
+            }
+
+            if (currentPosition >= tokens.Count)
+            {
+                throw new ParseException("No Entry Point in file");
             }
 
             ParseResult<Stmt> programStmt = ParseStmt(currentPosition);
@@ -921,7 +1037,7 @@ namespace Lang.Parser
                 switch (token.Type)
             {
                 case TokenType.BreakToken:
-                    if (tokens[startPosition + 1].Type == TokenType.SemicolonToken)
+                    if (startPosition + 1 < tokens.Count && tokens[startPosition + 1].Type == TokenType.SemicolonToken)
                         return new ParseResult<Stmt>(new BreakStmt(), startPosition + 2);
                     else
                         throw new ParseException("Missing Semicolon");
@@ -934,7 +1050,11 @@ namespace Lang.Parser
         {
             Token token = tokens[startPosition];
             if (token.Type == TokenType.ReturnToken)
-            { 
+            {
+                if (startPosition + 1 >= tokens.Count)
+                {
+                    throw new ParseException("Unexpected End of File after return statement");
+                }
                 if (tokens[startPosition + 1].Type != TokenType.SemicolonToken)
                 {
                     ParseResult<Exp> ReturnExp = ParseExp(startPosition + 1);
@@ -959,7 +1079,7 @@ namespace Lang.Parser
                 case TokenType.BooleanToken:
                 case TokenType.VoidToken:
                     ParseResult<Stmt> varDec = ParseVarDecStmt(startPosition);
-                    if (tokens[varDec.nextPosition].Type == TokenType.SemicolonToken)
+                    if (varDec.nextPosition < tokens.Count && tokens[varDec.nextPosition].Type == TokenType.SemicolonToken)
                     {
                         return new ParseResult<Stmt>(varDec.parseResult, varDec.nextPosition + 1);
                     }
@@ -970,7 +1090,7 @@ namespace Lang.Parser
                     {
                         ParseResult<Exp> exp = ParseExp(startPosition + 2);
 
-                        if (tokens[exp.nextPosition].Type == TokenType.SemicolonToken)
+                        if (exp.nextPosition < tokens.Count && tokens[exp.nextPosition].Type == TokenType.SemicolonToken)
                             return new ParseResult<Stmt>(new AssignmentStmt(new Identifier(token.Lexeme), exp.parseResult), exp.nextPosition + 1);
                         else
                             throw new ParseException("Missing Semicolon");
@@ -979,7 +1099,7 @@ namespace Lang.Parser
                     {
                         // Current token is a custom class, parse as a vardec
                         ParseResult<Stmt> customClassVarDec = ParseVarDecStmt(startPosition);
-                        if (tokens[customClassVarDec.nextPosition].Type == TokenType.SemicolonToken)
+                        if (customClassVarDec.nextPosition < tokens.Count && tokens[customClassVarDec.nextPosition].Type == TokenType.SemicolonToken)
                         {
                             return new ParseResult<Stmt>(customClassVarDec.parseResult, customClassVarDec.nextPosition + 1);
                         }
@@ -990,7 +1110,7 @@ namespace Lang.Parser
                     {
                         // Try to parse as an expression
                         ParseResult<Exp> exp = ParseExp(startPosition);
-                        if (tokens[exp.nextPosition].Type == TokenType.SemicolonToken)
+                        if (exp.nextPosition < tokens.Count && tokens[exp.nextPosition].Type == TokenType.SemicolonToken)
                             return new ParseResult<Stmt>(new ExpStmt(exp.parseResult), exp.nextPosition + 1);
                         else
                             throw new ParseException("Missing Semicolon");
@@ -1044,7 +1164,7 @@ namespace Lang.Parser
                 case TokenType.PrintlnToken:
                 case TokenType.NewToken:
                     ParseResult<Exp> stmtExp = ParseExp(startPosition);
-                    if (tokens[stmtExp.nextPosition].Type == TokenType.SemicolonToken)
+                    if (stmtExp.nextPosition < tokens.Count && tokens[stmtExp.nextPosition].Type == TokenType.SemicolonToken)
                         return new ParseResult<Stmt>(new ExpStmt(stmtExp.parseResult), stmtExp.nextPosition + 1);
                     else
                         throw new ParseException("Missing Semicolon");
@@ -1204,7 +1324,7 @@ namespace Lang.Parser
                 {
                     throw new ParseException("Missing Closing Parenthesis not found for Super");
                 }
-                if (tokens[currentPosition + 1].Type != TokenType.SemicolonToken)
+                if (currentPosition + 1 >= tokens.Count || tokens[currentPosition + 1].Type != TokenType.SemicolonToken)
                 {
                     throw new ParseException("Missing Semicolon for Super");
                 }
@@ -1277,7 +1397,7 @@ namespace Lang.Parser
 
             while (canBeType(currentToken))
             {
-                if (tokens[currentPosition + 2].Type != TokenType.SemicolonToken)
+                if (currentPosition + 2 >= tokens.Count || tokens[currentPosition + 2].Type != TokenType.SemicolonToken)
                 {
                     throw new ParseException("Missing Semicolon in Class Definition");
                 }
