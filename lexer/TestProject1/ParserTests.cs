@@ -339,4 +339,5 @@ public class ParserTests
         string expectedParseResult = "ClassDef(\nIdentifierExp(Animal) : \nConstructor(\n[]\nNo Super, \nBlockStmt(\n))\nMethodDef(\nIdentifierExp(speak), VoidType(), []\nBlockStmt(\n\tReturnStmt(PrintLn(IntegerExp(0)))\n))\n)\nClassDef(\nIdentifierExp(Cat) : IdentifierExp(Animal)\nConstructor(\n[]\nCalls Super, []\nBlockStmt(\n))\nMethodDef(\nIdentifierExp(speak), VoidType(), []\nBlockStmt(\n\tReturnStmt(PrintLn(IntegerExp(1)))\n))\n)\nClassDef(\nIdentifierExp(Dog) : IdentifierExp(Animal)\nConstructor(\n[]\nCalls Super, []\nBlockStmt(\n))\nMethodDef(\nIdentifierExp(speak), VoidType(), []\nBlockStmt(\n\tReturnStmt(PrintLn(IntegerExp(2)))\n))\n)\nVarDec(ClassType(Animal), IdentifierExp(cat))\nVarDec(ClassType(Animal), IdentifierExp(dog))\nAssignmentStmt(IdentifierExp(cat), NewExp(IdentifierExp(Cat)))\nAssignmentStmt(IdentifierExp(dog), NewExp(IdentifierExp(Dog)))\nExpStmt(BinOpExp(IdentifierExp(cat) PeriodOp() MethodCall(IdentifierExp(speak), [])))\nExpStmt(BinOpExp(IdentifierExp(dog) PeriodOp() MethodCall(IdentifierExp(speak), [])))\n";
         Assert.IsTrue(code.ToString().Equals(expectedParseResult));
     }
+
 }

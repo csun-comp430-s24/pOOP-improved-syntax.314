@@ -47,7 +47,7 @@
               "RelativeDocumentMoniker": "TestProject1\\ParserTests.cs",
               "ToolTip": "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\TestProject1\\ParserTests.cs",
               "RelativeToolTip": "TestProject1\\ParserTests.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABUAAAA1AAAA",
+              "ViewState": "AQIAAFQAAAAAAAAAAAAuwHQAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-04-13T05:19:55.889Z",
               "EditorCaption": ""
@@ -60,7 +60,7 @@
               "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\SourceServer\\6f5dc8371f87a583ab35ec1a3a5b517d3f25508047cafc453246edec2f73f9d8\\lexer\\430 project\\Parser.cs",
               "ToolTip": "C:\\Users\\chris\\AppData\\Local\\SourceServer\\6f5dc8371f87a583ab35ec1a3a5b517d3f25508047cafc453246edec2f73f9d8\\lexer\\430 project\\Parser.cs",
               "RelativeToolTip": "..\\..\\..\\..\\AppData\\Local\\SourceServer\\6f5dc8371f87a583ab35ec1a3a5b517d3f25508047cafc453246edec2f73f9d8\\lexer\\430 project\\Parser.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAMMCAABVAAAA",
+              "ViewState": "AQIAAH0CAAAAAAAAAAAhwIQCAAAzAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-04-13T04:15:26.395Z",
               "EditorCaption": ""
@@ -75,7 +75,8 @@
               "RelativeToolTip": "430 project\\Lexer.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAABgAAAAPAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-12T03:29:10.455Z"
+              "WhenOpened": "2024-04-12T03:29:10.455Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -85,7 +86,7 @@
               "RelativeDocumentMoniker": "430 project\\Program.cs",
               "ToolTip": "C:\\Users\\chris\\Documents\\GitHub\\pOOP-improved-syntax.314\\lexer\\430 project\\Program.cs",
               "RelativeToolTip": "430 project\\Program.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABYAAAAAAAAA",
+              "ViewState": "AQIAAAYAAAAAAAAAAAAAABYAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-03-11T20:08:16.015Z",
               "EditorCaption": ""
