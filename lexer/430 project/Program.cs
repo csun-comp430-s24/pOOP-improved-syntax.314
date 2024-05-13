@@ -1,5 +1,6 @@
 ﻿using Lang.Lexer;
 using Lang.Parser;
+using Lang.CodeGenerator;
 
 class Program
 {
