@@ -14,6 +14,7 @@ class Program
         Parser parser = new Parser(tokens);
         var ast = parser.ParseProgram(0);
         Parser.Code code = (Parser.Code)ast.parseResult;
+
         CodeGenerator codegenerator = new CodeGenerator(ast);
         var Generated = codegenerator.GenerateCode(0);
 

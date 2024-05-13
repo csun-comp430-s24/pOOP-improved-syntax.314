@@ -14,7 +14,8 @@ namespace Lang.CodeGenerator
     public class CodeGenerator
     {
         Lang.Parser.Parser.ParseResult<Lang.Parser.Parser.Program> ast;
-        public CodeGenerator(Lang.Parser.Parser.ParseResult<Lang.Parser.Parser.Program> ast) {
+        public CodeGenerator(Lang.Parser.Parser.ParseResult<Lang.Parser.Parser.Program> ast)
+        {
         this.ast = ast;
         }
         public CodeGenerator GenerateCode(int startPosition)
