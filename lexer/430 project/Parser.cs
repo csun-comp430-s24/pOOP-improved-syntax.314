@@ -935,7 +935,7 @@ namespace Lang.Parser
             }
         }
 
-        public ParseResult<Program> ParseProgram(int startPosition)//More Breakpoints!
+        public ParseResult<Program> ParseProgram(int startPosition)
         {
             List<ClassDef> classDefs = new List<ClassDef>();
             List<Stmt> stmts = new List<Stmt>();
