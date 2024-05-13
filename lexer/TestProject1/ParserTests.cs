@@ -5,6 +5,12 @@ using Lang.Parser;
 public class ParserTests
 {
     [TestMethod]
+    public void Parser_ShouldDifferentiateIdentifiers()
+    {
+        Assert.IsFalse(new Parser.Identifier("x").Equals(new Parser.Identifier("X")));
+    }
+
+    [TestMethod]
     public void Parser_ShouldParseAssignment()
     {
         string source = "x = 1 * 1;";
@@ -184,7 +190,7 @@ public class ParserTests
         fullParamList[3] = new Parser.FalseExp();
 
         Parser.MethodCall paramMethodCall = new Parser.MethodCall(new Parser.Identifier("myFunc"), fullParamList);
-        Parser.MethodCall emptyMethodCall = new Parser.MethodCall(new Parser.Identifier("otherFunc"), Array.Empty<Parser.Exp>());
+        Parser.MethodCall emptyMethodCall = new Parser.MethodCall(new Parser.Identifier("otherFunc"), []);
 
         Parser.BinopExp finalExp = new Parser.BinopExp(new Parser.BinopExp(new Parser.BinopExp(new Parser.Identifier("myClass"), new Parser.PeriodOp(), paramMethodCall), new Parser.PeriodOp(), emptyMethodCall), new Parser.PeriodOp(), new Parser.Identifier("field"));
 
@@ -203,9 +209,19 @@ public class ParserTests
         Parser parser = new Parser(tokens);
         var ast = parser.ParseProgram(0);
         Parser.Code code = (Parser.Code)ast.parseResult;
+        Parser.WhileStmt stmt = (Parser.WhileStmt)code.stmts[0];
 
-        string expectedParseResult = "WhileStmt(TrueExp(), (BlockStmt(\n\tAssignmentStmt(IdentifierExp(x), BinOpExp(IdentifierExp(x) PlusOp() IntegerExp(1)))\n)))\n";
-        Assert.IsTrue(code.ToString().Equals(expectedParseResult));
+        Assert.IsNotNull(stmt);
+
+        // Build up Expected Statement
+        Parser.BinopExp binop = new Parser.BinopExp(new Parser.Identifier("x"), new Parser.PlusOp(), new Parser.IntegerExp(1));
+        Parser.Stmt[] whilebody = [new Parser.AssignmentStmt(new Parser.Identifier("x"), binop)];
+        Parser.BlockStmt whileblock = new Parser.BlockStmt(whilebody);
+        Parser.WhileStmt expectedStmt = new Parser.WhileStmt(new Parser.TrueExp(), whileblock);
+
+        string expectedParseResult = expectedStmt.ToString();
+        Assert.IsTrue(stmt.ToString().Equals(expectedParseResult));
+        Assert.IsTrue(stmt.Equals(expectedStmt));
     }
 
     [TestMethod]
@@ -219,9 +235,16 @@ public class ParserTests
         Parser parser = new Parser(tokens);
         var ast = parser.ParseProgram(0);
         Parser.Code code = (Parser.Code)ast.parseResult;
+        Parser.IfStmt stmt = (Parser.IfStmt)code.stmts[0];
+        Assert.IsNotNull(stmt);
 
-        string expectedParseResult = "IfStmt(TrueExp(), (BlockStmt(\n\tBreakStmt()\n)))\n";
-        Assert.IsTrue(code.ToString().Equals(expectedParseResult));
+        // Build up expected result
+        Parser.BlockStmt ifBlock = new Parser.BlockStmt([new Parser.BreakStmt()]);
+        Parser.IfStmt expectedStatement = new Parser.IfStmt(new Parser.TrueExp(), ifBlock);
+
+        string expectedParseResult = expectedStatement.ToString();
+        Assert.IsTrue(stmt.ToString().Equals(expectedParseResult));
+        Assert.IsTrue(stmt.Equals(expectedStatement));
     }
 
     [TestMethod]
@@ -235,9 +258,69 @@ public class ParserTests
         Parser parser = new Parser(tokens);
         var ast = parser.ParseProgram(0);
         Parser.Code code = (Parser.Code)ast.parseResult;
+        Parser.IfStmt stmt = (Parser.IfStmt)code.stmts[0];
+        Assert.IsNotNull(stmt);
 
-        string expectedParseResult = "IfStmt(TrueExp(), (BlockStmt(\n\tBreakStmt()\n)), ElseStmt(BlockStmt(\n\tBreakStmt()\n)))\n";
-        Assert.IsTrue(code.ToString().Equals(expectedParseResult));
+        // Build up expected result
+        Parser.BlockStmt ifBlock = new Parser.BlockStmt([new Parser.BreakStmt()]);
+        Parser.BlockStmt elseBlock = new Parser.BlockStmt([new Parser.ReturnStmt(null)]);
+        Parser.IfStmt expectedStatement = new Parser.IfStmt(new Parser.TrueExp(), ifBlock, elseBlock);
+
+        string expectedParseResult = expectedStatement.ToString();
+        Assert.IsTrue(stmt.ToString().Equals(expectedParseResult));
+        Assert.IsTrue(stmt.Equals(expectedStatement));
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ParseException))]
+    public void Parser_DontParseStmtWithoutSemicolon()
+    {
+        string source = "bool x";
+
+        Tokenizer tokenizer = new Tokenizer(source);
+        List<Token> tokens = tokenizer.GetAllTokens();
+
+        Parser parser = new Parser(tokens);
+        var ast = parser.ParseProgram(0);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ParseException))]
+    public void Parser_DontParseInvalidClassDef()
+    {
+        string source = "class int { int value; init(int setValue) {value = setValue;} }";
+
+        Tokenizer tokenizer = new Tokenizer(source);
+        List<Token> tokens = tokenizer.GetAllTokens();
+
+        Parser parser = new Parser(tokens);
+        var ast = parser.ParseProgram(0);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ParseException))]
+    public void Parser_DontParseInvalidMethodType()
+    {
+        string source = "class Test { init() {} method myFunc() break {return 0;} }";
+
+        Tokenizer tokenizer = new Tokenizer(source);
+        List<Token> tokens = tokenizer.GetAllTokens();
+
+        Parser parser = new Parser(tokens);
+        var ast = parser.ParseProgram(0);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ParseException))]
+    public void Parser_DontParseMissingParenMethodDef()
+    {
+        string source = "class Test { init() {} method myFunc( int {return 0;} }";
+
+        Tokenizer tokenizer = new Tokenizer(source);
+        List<Token> tokens = tokenizer.GetAllTokens();
+
+        Parser parser = new Parser(tokens);
+        var ast = parser.ParseProgram(0);
     }
 
     [TestMethod]

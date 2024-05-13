@@ -5,8 +5,8 @@ class Program
 {
     static void Main()
     {
-        string source = "class Test { int x; init() {x = 1;} method myFunc() int { return x; } } Test test;";
-        //source = "x = 1 / 2 * 3;";
+        string source = "class Test { int x; init() {x = 1;} method myFunc() int { return this.x; } } Test test;";
+        //source = "if (true) {break;} else {return;}";
         Tokenizer tokenizer = new Tokenizer(source);
         List<Token> tokens = tokenizer.GetAllTokens();
 
