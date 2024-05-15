@@ -15,7 +15,7 @@ class Program
         var ast = parser.ParseProgram(0);
         Parser.Code code = (Parser.Code)ast.parseResult;
 
-        CodeGenerator codegenerator = new CodeGenerator(ast);
+        CodeGenerator codegenerator = new CodeGenerator(code);
         var Generated = codegenerator.GenerateCode(0);
 
         Console.WriteLine(Generated.ToString());
