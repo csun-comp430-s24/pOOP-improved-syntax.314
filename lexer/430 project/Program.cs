@@ -18,8 +18,10 @@ class Program
         CodeGenerator2 codegenerator = new CodeGenerator2();
         var Generated = codegenerator.GenerateCode(code);
 
+        Console.WriteLine(tokens.ToString());
+        Console.WriteLine("------------------------");
         Console.WriteLine(code.ToString());
-        Console.WriteLine("");
+        Console.WriteLine("------------------------");
         Console.WriteLine(Generated.ToString());
     }
 }
