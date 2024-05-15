@@ -1,4 +1,4 @@
-namespace Lang.CodeGenerator
+namespace Lang.CodeGenerator2
 {
     using Lang.Lexer;
     using Lang.Parser;
