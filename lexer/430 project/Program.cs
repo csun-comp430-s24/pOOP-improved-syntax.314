@@ -6,7 +6,7 @@ class Program
 {
     static void Main()
     {
-        string source = "class Test { int x; init() {x = 1;} method myFunc() int { return this.x; } } Test test;";
+        string source = "int x;\nx = 0; while (true) {x = x + 1;}";
         //source = "if (true) {break;} else {return;}";
         Tokenizer tokenizer = new Tokenizer(source);
         List<Token> tokens = tokenizer.GetAllTokens();
