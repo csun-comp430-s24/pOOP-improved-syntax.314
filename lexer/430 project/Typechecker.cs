@@ -328,9 +328,9 @@ using static Lang.Parser.Parser;
 
 namespace Lang.CodeGenerator
 {
-    public class CodeGenerator
+    public class CodeGenerator2
     {
-        public string GenerateCode(Program program)
+        public string GenerateCode(Code program)
         {
             var sb = new StringBuilder();
             if (program is Code code)
