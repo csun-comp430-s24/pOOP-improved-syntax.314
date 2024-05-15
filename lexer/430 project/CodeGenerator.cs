@@ -122,13 +122,6 @@ namespace Lang.CodeGenerator
             }
             return code;
         }
-
-        public void WriteOp()
-        {
-            
-        }
-
-
         private string GenerateStmt(Parser.Stmt stmt)
         {
             throw new NotImplementedException();
