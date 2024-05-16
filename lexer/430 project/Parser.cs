@@ -38,15 +38,6 @@ namespace Lang.Parser
         public interface ClassDef { }
         public interface Program { }
 
-        public class VarExp : Exp
-        {
-            public string name;
-            public VarExp(string name)
-            {
-                this.name = name;
-            }
-        }
-
         public class IntegerExp : Exp
         {
             public int value;
