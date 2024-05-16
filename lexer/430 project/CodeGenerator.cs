@@ -2,6 +2,7 @@ namespace Lang.CodeGenerator
 {
     using Lang.Lexer;
     using Lang.Parser;
+    using static Lang.Parser.Parser;
 
     public sealed class CodeGenerator
     {
@@ -10,7 +11,7 @@ namespace Lang.CodeGenerator
         Parser.Stmt[] stmts;
         string code = "";
 
-        public CodeGenerator(Parser.Code program) 
+        public CodeGenerator(Parser.Code program)
         {
             this.classDefs = program.classDefs;
             this.stmts = program.stmts;
@@ -29,6 +30,70 @@ namespace Lang.CodeGenerator
             }
 
             return code;
+        }
+
+        private string GenerateCommaStmt(Parser.Stmt[] stmts)
+        {
+            string commaStmtString = "";
+
+            if (stmts.Length > 0)
+            {
+                commaStmtString += $"{GenerateStmt(stmts[0])}";
+
+                for (int i = 1; i < stmts.Length; i++)
+                {
+                    commaStmtString += $", {GenerateStmt(stmts[i])}";
+                }
+            }
+
+            return commaStmtString;
+        }
+
+        private string GenerateCommaExp(Parser.Exp[] exps)
+        {
+            string commaExpString = "";
+
+            if (exps.Length > 0)
+            {
+                commaExpString += $"{GenerateExp(exps[0])}";
+
+                for (int i = 1; i < exps.Length; i++)
+                {
+                    commaExpString += $", {GenerateExp(exps[i])}";
+                }
+            }
+
+            return commaExpString;
+        }
+
+        private string GenerateConstructor(Parser.Con constructor, Parser.Stmt[] localVarDecs, string className, string? parentClassName = null)
+        {
+            string constructorCode = $"function {className}(";
+
+            constructorCode += $"({GenerateCommaStmt(constructor.parameters)}) {{";
+
+            if (constructor.callsSuper)
+            {
+                constructorCode += $"{parentClassName}.call(this);\n";
+            }
+
+            constructorCode += $"{GenerateStmt(new Parser.BlockStmt(localVarDecs))}\n\n{GenerateStmt(constructor.constructorBody)}}}\n";
+
+            if (constructor.callsSuper)
+            {
+                constructorCode += $"Object.setPrototypeOf({className}.prototype, {parentClassName}.prototype);\n";
+            }
+
+            return constructorCode;
+        }
+
+        private string GenerateMethodDef(Parser.Method methodDef, string className)
+        {
+            string methodDefCode = $"{className}.prototype.{methodDef.methodName} = function(";
+
+            methodDefCode += GenerateCommaStmt(methodDef.parameters);
+
+            return methodDefCode + $") {GenerateStmt(methodDef.methodBody)};";
         }
 
         private string GenerateExp(Parser.Exp expression)
@@ -108,15 +173,7 @@ namespace Lang.CodeGenerator
         {
             string callCode = $"{GenerateExp(call.Identifier)}(";
 
-            if (call.Parameters.Length > 0)
-            {
-                callCode += $"{GenerateExp(call.Parameters[0])}";
-
-                for (int i = 1; i < call.Parameters.Length; i++)
-                {
-                    callCode += $", {GenerateExp(call.Parameters[i])}";
-                }
-            }
+            callCode += GenerateCommaExp(call.Parameters);
 
             return callCode + ")";
         }
