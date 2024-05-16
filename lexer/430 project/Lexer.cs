@@ -75,11 +75,19 @@ namespace Lang.Lexer
         public Tokenizer(string source)
         {
             Lines = new List<string>(Regex.Split(source, Environment.NewLine));
-
+            foreach(string line in Lines)
+            {
+                Console.WriteLine(line);
+            }
         }
         char GetChar()
         {
             if (EOF) return (char)0;
+
+            if (Lines[Line].Length == 0)
+            {
+                Line++;
+            }
 
             char c = Lines[Line][Position];
 

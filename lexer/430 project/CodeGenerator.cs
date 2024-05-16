@@ -2,8 +2,6 @@ namespace Lang.CodeGenerator
 {
     using Lang.Lexer;
     using Lang.Parser;
-    using System.Runtime.CompilerServices;
-    using static Lang.Parser.Parser;
 
     public sealed class CodeGenerator
     {
@@ -17,7 +15,7 @@ namespace Lang.CodeGenerator
             this.classDefs = program.classDefs;
             this.stmts = program.stmts;
         }
-        public string GenerateCode(int counter)
+        public string GenerateCode()
         {
             foreach (Parser.ClassDef classDef in classDefs)
             {
@@ -34,14 +32,17 @@ namespace Lang.CodeGenerator
         }
         public string GenerateClassDef(Parser.Class classdef)
         {
-            string? ExtendedClassName = (classdef.extendingClassName!=null) ? classdef.extendingClassName.value : null;
-            string ClassName = classdef.className.value;
-            Parser.Stmt[] ExtendedVariable = classdef.localVarDecs;
-            string ClassDefCode = $"{GenerateConstructor((Parser.Con)(classdef.constructor), ExtendedVariable, ClassName, ExtendedClassName)}";
-            foreach(Parser.MethodDef temp in classdef.classMethods)
+            string? parentClassName = (classdef.extendingClassName != null) ? classdef.extendingClassName.value : null;
+            string className = classdef.className.value;
+            Parser.Stmt[] localVarDecs = classdef.localVarDecs;
+
+            string ClassDefCode = $"{GenerateConstructor((Parser.Con)(classdef.constructor), localVarDecs, className, parentClassName)}";
+            
+            foreach(Parser.MethodDef methodDef in classdef.classMethods)
             {
-                ClassDefCode += GenerateMethodDef((Parser.Method)temp, ClassName);
+                ClassDefCode += GenerateMethodDef((Parser.Method)methodDef, className);
             }
+
             return ClassDefCode;
         }
         private string GenerateCommaStmt(Parser.Stmt[] stmts)
@@ -157,7 +158,7 @@ namespace Lang.CodeGenerator
                 return GenerateBinOpExp((Parser.BinopExp)expression);
             }
 
-            return ""; // Will need to check for each kind of Exp
+            return "";
         }
 
         private string GenerateIdentifierExp(Parser.Identifier idExp)
