@@ -2,6 +2,7 @@ namespace Lang.CodeGenerator
 {
     using Lang.Lexer;
     using Lang.Parser;
+    using System.Runtime.CompilerServices;
     using static Lang.Parser.Parser;
 
     public sealed class CodeGenerator
@@ -18,11 +19,11 @@ namespace Lang.CodeGenerator
         }
         public string GenerateCode(int counter)
         {
-            //foreach (Parser.ClassDef classDef in classDefs)
-            //{
-            //    code += GenerateClassDef(classDef);
-            //    code += "\n";
-            //}
+            foreach (Parser.ClassDef classDef in classDefs)
+            {
+                code += GenerateClassDef((Parser.Class)classDef);
+                code += "\n";
+            }
 
             foreach (Parser.Stmt stmt in stmts)
             {
@@ -31,7 +32,18 @@ namespace Lang.CodeGenerator
 
             return code;
         }
-
+        public string GenerateClassDef(Parser.Class classdef)
+        {
+            string? ExtendedClassName = (classdef.extendingClassName!=null) ? classdef.extendingClassName.value : null;
+            string ClassName = classdef.className.value;
+            Parser.Stmt[] ExtendedVariable = classdef.localVarDecs;
+            string ClassDefCode = $"{GenerateConstructor((Parser.Con)(classdef.constructor), ExtendedVariable, ClassName, ExtendedClassName)}";
+            foreach(Parser.MethodDef temp in classdef.classMethods)
+            {
+                ClassDefCode += GenerateMethodDef((Parser.Method)temp, ClassName);
+            }
+            return ClassDefCode;
+        }
         private string GenerateCommaStmt(Parser.Stmt[] stmts)
         {
             string commaStmtString = "";
@@ -68,7 +80,7 @@ namespace Lang.CodeGenerator
 
         private string GenerateConstructor(Parser.Con constructor, Parser.Stmt[] localVarDecs, string className, string? parentClassName = null)
         {
-            string constructorCode = $"function {className}(";
+            string constructorCode = $"function {className}";
 
             constructorCode += $"({GenerateCommaStmt(constructor.parameters)}) {{";
 
@@ -89,7 +101,7 @@ namespace Lang.CodeGenerator
 
         private string GenerateMethodDef(Parser.Method methodDef, string className)
         {
-            string methodDefCode = $"{className}.prototype.{methodDef.methodName} = function(";
+            string methodDefCode = $"{className}.prototype.{methodDef.methodName.value} = function(";
 
             methodDefCode += GenerateCommaStmt(methodDef.parameters);
 

@@ -6,7 +6,7 @@ class Program
 {
     static void Main()
     {
-        string source = "int x;\nx = 0; while (true) {x = x + 1;}";
+        string source = "class Animal {  init() {}  method speak() Void { return println(0); }  }  class Cat extends Animal {    init() { super(); }    method speak() Void { return println(1); }  }  class Dog extends Animal {    init() { super(); }    method speak() Void { return println(2); }  }    Animal cat;  Animal dog;  cat = new Cat();  dog = new Dog();  cat.speak();  dog.speak();  ";
         //source = "if (true) {break;} else {return;}";
         Tokenizer tokenizer = new Tokenizer(source);
         List<Token> tokens = tokenizer.GetAllTokens();
