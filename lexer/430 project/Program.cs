@@ -6,8 +6,24 @@ class Program
 {
     static void Main()
     {
-        string source = "class Animal {  init() {}  method speak() Void { return println(0); }  }  class Cat extends Animal {    init() { super(); }    method speak() Void { return println(1); }  }  class Dog extends Animal {    init() { super(); }    method speak() Void { return println(2); }  }    Animal cat;  Animal dog;  cat = new Cat();  dog = new Dog();  cat.speak();  dog.speak();  ";
-        //source = "if (true) {break;} else {return;}";
+        Console.Write("Enter Path to File to Compile: ");
+        var dirPath = Console.ReadLine();
+
+        if (dirPath == null)
+        {
+            Console.WriteLine("No file path specified. Exiting...\n");
+            return;
+        }
+
+        if (dirPath.IndexOf(".pim") != dirPath.Length - 4)
+        {
+            Console.WriteLine("File is not a pOOP Improved Sytax file (.pim)\n");
+            Console.WriteLine("Exiting...\n");
+            return;
+        }
+
+        string source = File.ReadAllText(dirPath);
+
         Tokenizer tokenizer = new Tokenizer(source);
         List<Token> tokens = tokenizer.GetAllTokens();
 
@@ -16,7 +32,7 @@ class Program
         Parser.Code code = (Parser.Code)ast.parseResult;
 
         CodeGenerator codegenerator = new CodeGenerator(code);
-        var Generated = codegenerator.GenerateCode(0);
+        var Generated = codegenerator.GenerateCode();
 
         Console.WriteLine(Generated.ToString());
     }
